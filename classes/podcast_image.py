@@ -92,7 +92,7 @@ class PodcastImage:
 
         if not self.include_metadata:
             log(f"Deleting image {self.get_file_path().name}", "debug")        
-            self.get_file_path.unlink()
+            self.get_file_path().unlink()
             return True
         self.resize()
         if self.get_file_path().exists():
