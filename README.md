@@ -43,13 +43,7 @@ BULLDoZER is a script designed to automate the process of downloading, organizin
 
 ## Configuration
 
-Edit the `config.yaml` file to set up your preferences and API keys. The configuration file includes settings for:
-
-- `announce_url`: URL for torrent creation.
-- `api_key`: API key for duplicate checking.
-- `output_dir`: Directory for output files.
-- `pdl_episode_template`: Template for episode filenames.
-- `threads`: Number of threads for downloading episodes.
+Edit the `config.yaml` file to set up your preferences and API keys. The configuration file includes pretty much all settings that are needed to customize the behavior of the script. The settings most users need to change are at the top of the configuration file. The file has comments, and it's hopefully easy enough to understand what everything does.
 
 ## Usage
 
