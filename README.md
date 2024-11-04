@@ -22,7 +22,7 @@ BULLDoZER is a script designed to automate the process of downloading, organizin
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/lewler/bulldozer
+    git clone git@github.com:lewler/bulldozer.git
     cd bulldozer
     ```
 
