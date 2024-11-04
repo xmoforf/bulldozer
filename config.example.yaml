@@ -145,7 +145,7 @@ skip_capitalization:
 name_template: "{{ podcast_name }}{{ complete_str }}{{ premium_show }} [{{ start_year_str }}{{ last_episode_date_str }}/{{ file_format }}-{{ overall_bitrate }}]"
 
 # The template for the links themselves
-link_template: '[url={{ link }}]{{ text }}[/url]\n'
+link_template: "[url={{ link }}]{{ text }}[/url]"
 
 # The template for the links section
 links_section_template: |
@@ -156,62 +156,48 @@ links_section_template: |
 report_template: |
   {%- if name %}
   Name: {{ name }}
-
-  {%- endif %}
-
+  {% endif %}
   {%- if tags %}
   Tags: {{ tags }}
-
-  {%- endif %}
-
+  {% endif %}
   {%- if description %}
+  --- Torrent Description ---
+
   [b]Official Description[/b]
   [quote]{{ description }}[/quote]
-
-  {%- endif %}
-
+  {% endif %}
   {%- if last_episode_date %}
   [b]Last Episode Included[/b]
   {{ last_episode_date }}
-
-  {%- endif %}
-
+  {% endif %}
   {%- if bitrate_breakdown %}
   [b]Bitrate Breakdown[/b]
   [spoiler][code]
   {{ bitrate_breakdown }}
   [/code][/spoiler]
-
-  {%- endif %}
-
+  {% endif %}
   {%- if differing_bitrates %}
   [b]Differing Bitrates[/b]
   [spoiler][code]
   {{ differing_bitrates }}
   [/code][/spoiler]
-
-  {%- endif %}
-
+  {% endif %}
   {%- if file_format_breakdown %}
   [b]File Format Breakdown[/b]
   [spoiler][code]
   {{ file_format_breakdown }}
   [/code][/spoiler]
-
-  {%- endif %}
-
+  {% endif %}
   {%- if differing_file_formats %}
   [b]Differing File Formats[/b]
   [spoiler][code]
   {{ differing_file_formats }}
   [/code][/spoiler]
-
-  {%- endif %}
-
+  {% endif %}
   {%- if links %}
   {{ links }}
-
-  {%- endif %}
+  {% endif %}
+  --- Torrent Description ---
 
 ## Logging settings
 # The log level for the application
