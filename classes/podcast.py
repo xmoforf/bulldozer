@@ -5,7 +5,7 @@ from .dupe_checker import DupeChecker
 from .rss import Rss
 from .podcast_image import PodcastImage
 from .podcast_metadata import PodcastMetadata
-from .utils import log, run_command, announce, spinner
+from .utils import log, run_command, announce, spinner, get_metadata_directory
 
 class Podcast:
     def __init__(self, name, folder_path, config, source_rss_file=None, censor_rss=False, check_duplicates=True):
@@ -97,7 +97,11 @@ class Podcast:
         with spinner("Organizing metadata files") as spin:
             self.metadata.archive_file()
             self.image.archive_file()
-            self.rss.delete_file()
+            self.rss.archive_file()
+            if not self.config.get('include_metadata', False):
+                metadata_directory = get_metadata_directory(self.folder_path, self.config)
+                if metadata_directory.exists():
+                    metadata_directory.rmdir()
             spin.ok("✔")
 
     def cleanup_and_exit(self):
