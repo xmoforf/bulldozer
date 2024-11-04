@@ -7,7 +7,7 @@ from pathlib import Path
 from classes.dupe_checker import DupeChecker
 from classes.podcast import Podcast
 from classes.torrent_creator import TorrentCreator
-from classes.utils import load_config, setup_logging, announce, ask_yes_no
+from classes.utils import load_config, setup_logging, announce, ask_yes_no, log
 from classes.report import Report
 
 config = load_config()
@@ -19,6 +19,7 @@ def main(input, censor_rss):
     :param input: The input to the script, can be a directory path, RSS feed URL, or local RSS file path
     :param censor_rss: Whether to censor the RSS feed or not
     """
+    global config
     print("· • —– ++ ---| Bulldozer v0.5.1 |--- ++ —– • ·")
 
     if os.path.isdir(input):

@@ -36,14 +36,16 @@ Bulldozer is a script designed to automate the process of downloading, organizin
     sudo apt-get install libwebp-dev libavif-dev
     ```
 
-4. Copy the example configuration file and modify it as needed:
+4. Create your own config file, and add the things you need to override:
     ```sh
-    cp config.example.yaml config.yaml
+    touch config.yaml
     ```
 
 ## Configuration
 
 Edit the `config.yaml` file to set up your preferences and API keys. The configuration file includes pretty much all settings that are needed to customize the behavior of the script. The settings most users need to change are at the top of the configuration file. The file has comments, and it's hopefully easy enough to understand what everything does.
+
+Note that you do not need to copy the entire file, and you do not need to add values that you don't need to change. This approach means less work when new things are added to `config.default.yaml`.
 
 ## Usage
 
