@@ -32,9 +32,7 @@ def main(input, censor_rss):
         temp_dir = Path(output_dir) / 'download_temp'
         temp_dir.mkdir(parents=True, exist_ok=True)
         podcast = Podcast("unknown podcast", temp_dir, source_rss_file=source_rss_file, config=config, censor_rss=censor_rss)
-        episode_template = config.get("pdl_episode_template", "{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}")
-        threads = config.get("threads", 1)
-        podcast.download_episodes(episode_template, threads)
+        podcast.download_episodes()
         name = podcast.name
         folder_path = temp_dir
 
