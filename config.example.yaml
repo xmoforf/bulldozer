@@ -32,6 +32,9 @@ api_key: andthisismyapikey
 # The URL to check for duplicates
 dupecheck_url: https://tracker.com/api/torrents/filter
 
+# How the RSS feed should be censored. Can be 'delete', 'edit'
+rss_censor_mode: delete
+
 ## podcast-dl Settings
 # The template for the podcast download
 pdl_episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}'
@@ -55,7 +58,10 @@ unwanted_files:
 
 # The premium networks to check for
 premium_networks:
-  - Wondery+
+  - text: Wondery+
+    tag: title
+  - text: patreon.com
+    tag: link
 
 # Decides if the premium tag should be included in the name
 include_premium_tag: true
@@ -139,6 +145,21 @@ force_titlecase:
 skip_capitalization:
   - '\.meta'
   - '\.image'
+
+# These patterns will be removed from the RSS feed
+censor_rss_patterns:
+  - pattern: 'token-[^&"\s]+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: '\d+/patreon-media/p/post/\d+/\w+/\w+%3D%3D/'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: '\/([^\/?]+\.mp3)'
+    replacement: '/obfuscated.mp3'
+    flags:
+      - IGNORECASE
 
 ## Templates
 # The template for the name to use in the report

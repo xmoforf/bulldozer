@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from titlecase import titlecase
 from .utils import spinner, get_metadata_directory, log
-from .utils import special_capitalization, announce
+from .utils import special_capitalization, announce, archive_metadata
 
 class Rss:
     def __init__(self, podcast, source_rss_file, config, censor_rss):
@@ -26,6 +26,7 @@ class Rss:
         self.config = config
         self.censor_rss = censor_rss
         self.keep_source_rss = self.config.get('keep_source_rss', False)
+        self.archive = config.get('archive_metadata', False)
         self.metadata = dict()
 
     def get_file_path(self):
@@ -157,15 +158,64 @@ class Rss:
             self.load_local_file()
         else:
             self.download_file()
-        
-    def delete_file(self):
+    
+    def edit_rss_feed(self):
+        """
+        Edit the RSS feed file.
+        """
+        # find all strings matching the regex saved in config censor_rss_patterns, and replace them
+        with self.get_file_path().open('r') as rss_file:
+            rss_content = rss_file.read()
+        if not rss_content:
+            log("RSS file is empty, can't be edited", "warning")
+            return
+        for item in self.config.get('censor_rss_patterns', []):
+            pattern = item['pattern']
+            replacement = item['replacement']
+            flags = item.get('flags', [])
+            regex_flags = 0
+            flag_mapping = {
+                'IGNORECASE': re.IGNORECASE,
+                'MULTILINE': re.MULTILINE,
+                'DOTALL': re.DOTALL,
+                'VERBOSE': re.VERBOSE,
+                'ASCII': re.ASCII,
+            }
+            for flag in flags:
+                regex_flags |= flag_mapping.get(flag.upper(), 0)
+
+            repeat = item.get('repeat_until_no_change', False)
+
+            if repeat:
+                previous_content = None
+                while previous_content != rss_content:
+                    previous_content = rss_content
+                    rss_content = re.sub(pattern, replacement, rss_content)
+            else:
+                rss_content = re.sub(pattern, replacement, rss_content)
+        with self.get_file_path().open('w') as rss_file:
+            rss_file.write(rss_content)
+
+    def archive_file(self):
         """
         Delete the RSS feed file.
         """
+        if not self.get_file_path().exists():
+            log("RSS file does not exist, can't be archived", "warning")
+            return
+        if self.archive:
+            log(f"Archiving RSS feed {self.get_file_path().name}", "debug")
+            archive_metadata(self.get_file_path(), self.config.get('archive_metadata_directory', None))
         if self.censor_rss:
-            if self.get_file_path().exists():
-                self.get_file_path().unlink()
-                log(f"RSS feed deleted since censor was true: {self.get_file_path()}", "debug")
+            censor_mode = self.config.get('rss_censor_mode', 'delete')
+            if censor_mode == 'edit':
+                if self.get_file_path().exists():
+                    self.edit_rss_feed()
+                    log(f"RSS feed edited since censor was true: {self.get_file_path()}", "debug")
+            else:
+                if self.get_file_path().exists():
+                    self.get_file_path().unlink()
+                    log(f"RSS feed deleted since censor was true: {self.get_file_path()}", "debug")
 
     def check_for_premium_show(self):
         """
@@ -180,12 +230,17 @@ class Rss:
         root = tree.getroot()
         channel = root.find('channel')
         if channel is not None:
-            title = channel.find('title')
-            if title is not None:
-                for network in self.config.get('premium_networks', []):
-                    if network in title.text:
+            for network in self.config.get('premium_networks', []):
+                if not network.get('tag') or not network.get('text') or not network.get('name'):
+                    announce("Invalid premium network configuration", "error")
+                    log(f"Invalid premium network configuration: {network}", "debug")
+                    exit(1)
+                tag = channel.find(network['tag'])
+                if tag is not None:
+                    if network['text'] in tag.text:
+                        log(f"Identified premium network {network['name']} from RSS feed", "debug")
                         self.censor_rss = True
                         if not self.config.get('include_premium_tag', True):
                             return ""
-                        return f" ({network})"
+                        return f" ({network['name']})"
         return ""
