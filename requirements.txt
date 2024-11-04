@@ -1,0 +1,9 @@
+Pillow
+yaspin
+requests
+mutagen
+titlecase
+pyyaml
+pillow
+pillow-avif-plugin
+jinja2

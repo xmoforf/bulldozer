@@ -1,0 +1,224 @@
+## Common Settings
+# The directory where prepared uploads are stored
+output_dir: /home/user/podcasts
+
+# The temporary name for a new download
+temp_dir_name: temp_download
+
+# Whether to include metadata in the upload
+include_metadata: true
+
+# The directory where metadata is stored
+metadata_directory: Metadata
+
+# Keep a copy of the metadata json
+archive_metadata: false
+
+# The directory to store the archived metadata
+archive_metadata_directory: /home/user/podcasts/archive
+
+# Whether to keep the source RSS file, only applies to local files
+keep_source_rss: false
+
+# The size you want the resized cover art to be
+cover_size: 800
+
+# The announce URL for the tracker
+announce_url: https://tracker.com/announce/thisismysecretkey
+
+# The API key to access the tracker
+api_key: andthisismyapikey
+
+# The URL to check for duplicates
+dupecheck_url: https://tracker.com/api/torrents/filter
+
+## podcast-dl Settings
+# The template for the podcast download
+pdl_episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}'
+
+# The number of threads to use for podcast downloads
+pdl_threads: 4
+
+## Various settings
+# The script will ask if you want to delete files matching these strings
+unwanted_files:
+  - What to Listen to Next
+  - More from
+  - Introducing
+  - New from
+  - Presents
+  - Preview
+  - Replay
+  - Rebroadcast
+  - Re-run
+  - Re-release
+
+# The premium networks to check for
+premium_networks:
+  - Wondery+
+
+# Decides if the premium tag should be included in the name
+include_premium_tag: true
+
+# The number of days to wait before a podcast is considered complete
+completed_threshold_days: 365
+
+# The replacements to make in the folder and file names
+file_replacements:
+  - pattern: 'Wondery\+ Edition'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Wondery\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Premium'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: '_'
+    replacement: ' -'
+  - pattern: '\s*-\s*\.'
+    replacement: '.'
+  - pattern: '\s{2,}'
+    replacement: ' '
+  - pattern: '\s+\.(\w+)$'
+    replacement: '.\1'
+  - pattern: '(?<!\d)(-)(?!\d)(\w)'
+    replacement: '\1 \2'
+  - pattern: '-\s+-'
+    replacement: '-'
+    repeat_until_no_change: true
+  - pattern: '\s+(?=\.)'
+    replacement: ''
+
+# The replacements to make in the description
+description_replacements:
+  - pattern: '<br>'
+    replace_with: '\n'
+  - pattern: '<p>'
+    replace_with: '\n'
+  - pattern: '</p>'
+    replace_with: '\n'
+  - pattern: '&nbsp;'
+    replace_with: ' '
+  - pattern: '<em>'
+    replace_with: '[i]'
+  - pattern: '</em>'
+    replace_with: '[/i]'
+
+## Date formats
+# Short date format
+date_format_short: '%Y-%m-%d'
+
+# Long date format
+date_format_long: '%B %d %Y'
+
+## Patterns
+# The pattern to match the episode file
+ep_nr_at_end_file_pattern: '^(.* - )(\d{4}-\d{2}-\d{2}) (.*?)( - )(\d+)(\.\w+)$'
+
+# The pattern to match the episode file with a number
+numbered_episode_pattern: '^(.* - )(\d{4}-\d{2}-\d{2}) (\d+)\. (.*)(\.\w+)'
+
+# The pattern to match the episode file without a number
+unnumbered_episode_pattern: '^(.*) - )(\d{4}-\d{2}-\d{2}) (.*)(\.\w+)'
+
+# When renaming files, anything matching these patterns will be uppercase
+force_uppercase:
+  - '^S\d+E\d+$'
+  - '^E\d+$'
+
+# When renaming files, anything matching these patterns will be title case
+force_titlecase:
+  - '^The$'
+  - '^A$'
+
+# When renaming files, anything matching these patterns will be left untouched
+skip_capitalization:
+  - '\.meta'
+  - '\.image'
+
+## Templates
+# The template for the name to use in the report
+name_template: "{{ podcast_name }}{{ complete_str }}{{ premium_show }} [{{ start_year_str }}{{ last_episode_date_str }}/{{ file_format }}-{{ overall_bitrate }}]"
+
+# The template for the links themselves
+link_template: '[url={{ link }}]{{ text }}[/url]\n'
+
+# The template for the links section
+links_section_template: |
+  [b]Links[/b]
+  {{ links }}
+
+# The template for the report
+report_template: |
+  {%- if name %}
+  Name: {{ name }}
+
+  {%- endif %}
+
+  {%- if tags %}
+  Tags: {{ tags }}
+
+  {%- endif %}
+
+  {%- if description %}
+  [b]Official Description[/b]
+  [quote]{{ description }}[/quote]
+
+  {%- endif %}
+
+  {%- if last_episode_date %}
+  [b]Last Episode Included[/b]
+  {{ last_episode_date }}
+
+  {%- endif %}
+
+  {%- if bitrate_breakdown %}
+  [b]Bitrate Breakdown[/b]
+  [spoiler][code]
+  {{ bitrate_breakdown }}
+  [/code][/spoiler]
+
+  {%- endif %}
+
+  {%- if differing_bitrates %}
+  [b]Differing Bitrates[/b]
+  [spoiler][code]
+  {{ differing_bitrates }}
+  [/code][/spoiler]
+
+  {%- endif %}
+
+  {%- if file_format_breakdown %}
+  [b]File Format Breakdown[/b]
+  [spoiler][code]
+  {{ file_format_breakdown }}
+  [/code][/spoiler]
+
+  {%- endif %}
+
+  {%- if differing_file_formats %}
+  [b]Differing File Formats[/b]
+  [spoiler][code]
+  {{ differing_file_formats }}
+  [/code][/spoiler]
+
+  {%- endif %}
+
+  {%- if links %}
+  {{ links }}
+
+  {%- endif %}
+
+## Logging settings
+# The log level for the application
+log_level: WARNING
+
+# The maximum size of the log file in MB
+logfile_size_mb: 1
+
+# The number of log files to keep
+logfile_count: 5

@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+
+# bulldozer
+import os
+import argparse
+from pathlib import Path
+from classes.dupe_checker import DupeChecker
+from classes.podcast import Podcast
+from classes.torrent_creator import TorrentCreator
+from classes.utils import load_config, setup_logging, announce, ask_yes_no
+from classes.report import Report
+
+config = load_config()
+
+def main(input, censor_rss):
+    """
+    Main function to run the bulldozer script
+
+    :param input: The input to the script, can be a directory path, RSS feed URL, or local RSS file path
+    :param censor_rss: Whether to censor the RSS feed or not
+    """
+    print("· • —– ++ ---| BULLDoZER v0.5 |--- ++ —– • ·")
+
+    if os.path.isdir(input):
+        folder_path = Path(input)
+        name = folder_path.name
+        podcast = Podcast(name, folder_path, config=config, censor_rss=censor_rss)
+    else:
+        source_rss_file = input
+        output_dir = config.get("output_dir", ".")
+        temp_dir = Path(output_dir) / 'download_temp'
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        podcast = Podcast("unknown podcast", temp_dir, source_rss_file=source_rss_file, config=config, censor_rss=censor_rss)
+        episode_template = config.get("pdl_episode_template", "{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}")
+        threads = config.get("threads", 1)
+        podcast.download_episodes(episode_template, threads)
+        name = podcast.name
+        folder_path = temp_dir
+
+    podcast.analyze_files()
+    podcast.organize_files()
+    # This is hacky, but since files are renamed, and possibly removed, we need to rerun this
+    podcast.analyze_files()
+    if not podcast.metadata.load():
+        announce(f"Failed to load metadata for {name}, skipping report generation", "warning")
+    else:
+        report  = Report(podcast, config)
+        report.generate()
+    podcast.archive_files()
+
+    announce_url = config.get("announce_url", None)
+    create_torrent(podcast, announce_url)
+
+    announce(f"All done, enjoy!", "celebrate")
+
+def check_files(input):
+    """
+    Check the files in the given folder
+
+    :param input: The folder path to check
+    """
+    global config
+    folder_path = Path(input)
+    if folder_path.exists() and folder_path.is_dir():
+        name = folder_path.name
+        podcast = Podcast(name, folder_path, config, check_duplicates=False)
+        podcast.analyze_files()
+        report = Report(podcast, config)
+        report.generate(True)
+    else:
+        announce(f"Folder {folder_path} does not exist", "error")
+
+
+def create_torrent(podcast, announce_url):
+    """
+    Create a torrent file for the given podcast
+
+    :param podcast: The podcast object to create the torrent for
+    :param announce_url: The announce URL to use for the torrent
+    """
+    if not announce_url:
+        announce(f"Skipping torrent creation for {podcast.name}, no announce URL provided", "info")
+        return
+    torrent_creator = TorrentCreator(podcast, announce_url)
+    total_size = sum(f.stat().st_size for f in podcast.folder_path.rglob('*') if f.is_file())
+    piece_size = torrent_creator.calculate_piece_size(total_size)
+    if ask_yes_no(f'Would you like to create the torrent now (piece size calcualted to {piece_size})'):
+        torrent_creator.create_torrent(piece_size)
+
+def make_torrent(input):
+    """
+    Make a torrent file for the given folder
+
+    :param input: The folder path to create the torrent for
+    """
+    global config
+    folder_path = Path(input)
+    if folder_path.exists() and folder_path.is_dir():
+        name = folder_path.name
+        podcast = Podcast(name, folder_path, config, check_duplicates=False)
+        announce_url = config.get("announce_url")
+        create_torrent(podcast, announce_url)
+    else:
+        announce(f"Folder {folder_path} does not exist", "error")
+        return
+    announce(f"All done, enjoy!", "celebrate")
+
+def dupecheck(input):
+    """
+    Perform a dupecheck on the given input
+
+    :param input: The name to dupecheck
+    """
+    api_key = config.get("api_key")
+    dupecheck_url = config.get("dupecheck_url")
+    
+    dupe_checker = DupeChecker(input, dupecheck_url, api_key, False)
+    dupe_checker.check_duplicates(True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Podcast Automator Script")
+    parser.add_argument("input", help="RSS feed URL, directory path, local RSS file path, or name to dupecheck")
+    parser.add_argument("--censor-rss", action="store_true", help="Make sure the RSS feed is censored")
+    parser.add_argument("--check-files", action="store_true", help="Only check the files")
+    parser.add_argument("--dupecheck", action="store_true", help="Perform a dupecheck")
+    parser.add_argument("--make-torrent", action="store_true", help="Only make a torrent file")
+    parser.add_argument("--log-level", type=str, help="Set the logging level (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL)")
+    args = parser.parse_args()
+
+    if not config:
+        exit(1)
+
+    setup_logging(args.log_level, config)
+
+    if args.make_torrent:
+        make_torrent(args.input)
+    elif args.dupecheck:
+        dupecheck(args.input)
+    elif args.check_files:
+        check_files(args.input)
+    else:
+        main(args.input, args.censor_rss)
