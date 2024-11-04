@@ -55,23 +55,32 @@ def spinner(text):
 
 def load_config():
     """
-    Load the configuration from the 'config.yaml' file.
+    Load the configuration settings.
 
     :return: The configuration settings.
     """
     global config
-    config_file = Path("config.yaml")
-    if not config_file.exists():
-        logging.error("Error: 'config.yaml' not found.")
+    base_config_file = Path("config.default.yaml")
+    user_config_file = Path("config.yaml")
+    if not base_config_file.exists():
+        log("'config.default.yaml' not found.", "error")
         return None
+    with open(base_config_file, 'r') as base_file:
+        base_config = yaml.safe_load(base_file)
 
-    with config_file.open("r") as f:
-        config = yaml.safe_load(f)
-
-    if not config:
-        logging.error("Error: Failed to load config file.")
+    if not base_config:
+        log("Failed to load base config file.", "error")
         return None
     
+    try:
+        with open(user_config_file, 'r') as user_file:
+            user_config = yaml.safe_load(user_file)
+    except FileNotFoundError:
+        log("'config.yaml' not found, will only use defaults.", "debug")
+        user_config = {}
+
+    config = {**base_config, **user_config}
+
     return config
 
 def setup_logging(log_level, config=None):
