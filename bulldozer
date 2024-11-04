@@ -19,7 +19,7 @@ def main(input, censor_rss):
     :param input: The input to the script, can be a directory path, RSS feed URL, or local RSS file path
     :param censor_rss: Whether to censor the RSS feed or not
     """
-    print("· • —– ++ ---| Bulldozer v0.5 |--- ++ —– • ·")
+    print("· • —– ++ ---| Bulldozer v0.5.1 |--- ++ —– • ·")
 
     if os.path.isdir(input):
         folder_path = Path(input)
