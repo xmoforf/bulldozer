@@ -1,6 +1,6 @@
 # Bulldozer
 
-Bulldozer is a script designed to automate the process of downloading, organizing, analyzing, and creating torrents for podcast episodes. It's highly customizable, as pretty much everything you might be interested in changing is defined in the configuration file.
+Bulldozer is a script designed to automate the process of downloading, organizing, analyzing, and creating torrents for podcasts. It's highly customizable, as pretty much everything you might be interested in changing is defined in the configuration file.
 
 ## Features
 
