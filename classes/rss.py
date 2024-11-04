@@ -232,9 +232,8 @@ class Rss:
         if channel is not None:
             for network in self.config.get('premium_networks', []):
                 if not network.get('tag') or not network.get('text') or not network.get('name'):
-                    announce("Invalid premium network configuration", "error")
                     log(f"Invalid premium network configuration: {network}", "debug")
-                    exit(1)
+                    continue
                 tag = channel.find(network['tag'])
                 if tag is not None:
                     if network['text'] in tag.text:
