@@ -4,12 +4,13 @@ Bulldozer is a script designed to automate the process of downloading, organizin
 
 ## Features
 
-- Download podcast episodes using RSS feeds.
-- Check for duplicate episodes using an external API.
-- Organize and analyze downloaded files.
-- Generate reports based on the downloaded content.
-- Automatic RSS censoring for matching premium sources.
-- Create torrent files for sharing podcast episodes.
+- Download podcast episodes using RSS feeds
+- Check for duplicate episodes using an external API
+- Organize and analyze downloaded files
+- Generate reports based on the downloaded content
+- Fetching data from the Podchaser API
+- Automatic RSS censoring for matching premium sources
+- Create torrent files for sharing podcast episodes
 
 ## Requirements
 
@@ -70,6 +71,8 @@ python bulldozer <input>
 
 - bulldozer: Main script
 - classes/: Contains various classes used in the project.
+  - apis/: Contains classes to interact with various apis.
+    - podchaser.py: Interacts with the Podchaser API
   - dupe_checker.py: Checks for duplicates.
   - file_analyzer.py: Analyzes downloaded files.
   - file_organizer.py: Organizes downloaded files.
