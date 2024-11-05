@@ -42,6 +42,8 @@ Bulldozer is a script designed to automate the process of downloading, organizin
     touch config.yaml
     ```
 
+5. If you want to use the Podchaser API you will need a token, which is free up to 25k points per month.
+
 ## Configuration
 
 Edit the `config.yaml` file to set up your preferences and API keys. The configuration file includes pretty much all settings that are needed to customize the behavior of the script. The settings most users need to change are at the top of the configuration file. The file has comments, and it's hopefully easy enough to understand what everything does.
@@ -104,3 +106,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 - [yaspin](https://pypi.org/project/yaspin/) for terminal spinners.
 - [mutagen](https://pypi.org/project/mutagen/) for audio metadata handling.
 - [titlecase](https://pypi.org/project/titlecase/) for title casing.
+- [Podchaser API](https://api-docs.podchaser.com/docs/overview) for additional metadata.
