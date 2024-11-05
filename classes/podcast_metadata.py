@@ -146,7 +146,8 @@ class PodcastMetadata:
         """
         Get the Podchaser data for the podcast.
         """
-        if not self.config.get('podchaser', {}).get('enabled', False):
+        if not self.config.get('podchaser', {}).get('active', False):
+            log("Podchaser API is not enabled.", "debug")
             return None
         
         podchaser = Podchaser(self.config.get('podchaser', {}).get('token', None), self.config.get('podchaser', {}).get('fields', None))
