@@ -43,8 +43,8 @@ cache:
 ## API Settings
 # The Podchaser API settings
 podchaser: 
-  token: null # The Podchaser API token
   active: false # Whether to use the Podchaser API
+  token: null # The Podchaser API token
   fields: # The fields to retrieve from the API
     - id
     - title
@@ -69,6 +69,12 @@ podchaser:
       - url
     - categories:
       - title
+
+# The Podcast Index API settings
+podcastindex:
+  active: false # Whether to use the Podcast Index API
+  key: null # The Podcast Index API key
+  secret: null # The Podcast Index API secret
 
 ## podcast-dl Settings
 podcast_dl:
