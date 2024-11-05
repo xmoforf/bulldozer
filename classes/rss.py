@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from titlecase import titlecase
 from .utils import spinner, get_metadata_directory, log
-from .utils import special_capitalization, announce, archive_metadata
+from .utils import special_capitalization, archive_metadata, ask_yes_no, announce
 
 class Rss:
     def __init__(self, podcast, source_rss_file, config, censor_rss):
@@ -103,7 +103,11 @@ class Rss:
             if new_folder_path.exists():
                 spin.fail("✖")
                 log(f"Folder {new_folder_path} already exists", "critical")
-                exit(1)
+                if not ask_yes_no("Folder already exists, do you want to overwrite it?"):
+                    announce("Exiting, cya later!", "info")
+                    exit(1)
+
+                shutil.rmtree(new_folder_path)
 
             self.podcast.folder_path.rename(new_folder_path)
             log(f"Folder renamed to {new_folder_path}", "debug")
