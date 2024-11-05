@@ -129,6 +129,8 @@ def log(text, level="info"):
         logging.warning(text)
     elif level == "error":
         logging.error(text)
+    elif level == "critical":
+        logging.critical(text)
     elif level == "debug":
         logging.debug(text)
     else:
