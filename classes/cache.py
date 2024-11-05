@@ -24,10 +24,18 @@ class Cache:
 
         :return: True if the cache directory exists, False otherwise.
         """
+        from .utils import announce, log
+
         if not self.cache_directory:
             return False
         if not self.cache_directory.exists():
-            self.cache_directory.mkdir(parents=True)
+            try:
+                self.cache_directory.mkdir(parents=True)
+            except Exception as e:
+                announce(f"Failed to create cache directory, check your config", "error")
+                log(f"Failed to create cache directory", "error")
+                log(str(e), "error")
+                return False
         return True
     
     def get_cache_file(self, key):
