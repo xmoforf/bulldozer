@@ -37,7 +37,7 @@ class FileAnalyzer:
                         self.process_metadata(metadata, file_path)
             if all_bad:
                 spin.fail("✖")
-                log("No valid audio files found", "error")
+                log("No valid audio files found", "critical")
                 return
             spin.ok("✔")
 

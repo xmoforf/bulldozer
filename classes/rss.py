@@ -96,15 +96,15 @@ class Rss:
             self.metadata['name'] = self.extract_folder_name_from()
             if not self.metadata['name']:
                 spin.fail("✖")
-                log("Failed to extract name from RSS feed", "error")
+                log("Failed to extract name from RSS feed", "critical")
                 exit(1)
 
             new_folder_path = self.podcast.folder_path.parent / f'{self.metadata['name']}'
             if new_folder_path.exists():
                 spin.fail("✖")
-                announce(f"Folder {new_folder_path} already exists - can't continue", "error")
-                log(f"Folder {new_folder_path} already exists", "error")
+                log(f"Folder {new_folder_path} already exists", "critical")
                 exit(1)
+
             self.podcast.folder_path.rename(new_folder_path)
             log(f"Folder renamed to {new_folder_path}", "debug")
             self.podcast.folder_path = new_folder_path
@@ -130,7 +130,7 @@ class Rss:
                 spin.ok("✔")
             except requests.RequestException as e:
                 spin.fail("✘")
-                log(f"Failed to download RSS feed", "error")
+                log(f"Failed to download RSS feed", "critical")
                 log(e, "debug")
                 raise
     

@@ -47,7 +47,7 @@ class Podcast:
         metadata = self.rss.get_metadata()
 
         if not metadata:
-            announce("Failed to get metadata from RSS feed", "error")
+            announce("Failed to get metadata from RSS feed", "critical")
             exit(1)
 
         self.name = self.rss.metadata['name']
