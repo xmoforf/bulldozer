@@ -88,8 +88,9 @@ def load_config():
         user_config = {}
 
     deep_merge(base_config, user_config)
+    config = base_config
 
-    return base_config
+    return config
 
 def setup_logging(log_level, config=None):
     """
@@ -152,15 +153,15 @@ def announce(text, type=None):
     """
     prepend = "  "
     if type == "critical":
-        prepend = "❌"
+        prepend = "❌ "
     if type == "error":
-        prepend = "❗️"
+        prepend = "❗️ "
     if type == "warning":
-        prepend = "⚠️"
+        prepend = "⚠️ "
     if type == "info":
-        prepend = "ℹ️"
+        prepend = "ℹ️ "
     if type == "celebrate":
-        prepend = "🎉"
+        prepend = "🎉 "
     print(f"{prepend}{text}")
 
 def ask_yes_no(question):
