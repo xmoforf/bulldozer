@@ -35,12 +35,45 @@ dupecheck_url: https://tracker.com/api/torrents/filter
 # How the RSS feed should be censored. Can be 'delete', 'edit'
 rss_censor_mode: delete
 
-## podcast-dl Settings
-# The template for the podcast download
-pdl_episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}'
+## Cache settings
+cache:
+  directory: /home/user/podcasts/cache # The directory to store the cache
+  hours: 24 # The number of hours to keep the cache
 
-# The number of threads to use for podcast downloads
-pdl_threads: 4
+## API Settings
+# The Podchaser API settings
+podchaser: 
+  token: null # The Podchaser API token
+  active: false # Whether to use the Podchaser API
+  fields: # The fields to retrieve from the API
+    - id
+    - title
+    - description
+    - author:
+      - name
+    - url
+    - webUrl
+    - rssUrl
+    - language
+    - status
+    - numberOfEpisodes
+    - avgEpisodeLength
+    - daysBetweenEpisodes
+    - startDate
+    - latestEpisodeDate
+    - applePodcastsId
+    - spotifyId
+    - networks:
+      - id
+      - title
+      - url
+    - categories:
+      - title
+
+## podcast-dl Settings
+podcast_dl:
+  episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}' # The template for the episode name
+  threads: 4 # Number of threads to use for downloading
 
 ## Various settings
 # The script will ask if you want to delete files matching these strings
@@ -60,8 +93,10 @@ unwanted_files:
 premium_networks:
   - text: Wondery+
     tag: title
+    name: Wondery+
   - text: patreon.com
     tag: link
+    name: Patreon
 
 # Decides if the premium tag should be included in the name
 include_premium_tag: true
@@ -175,6 +210,9 @@ links_section_template: |
 
 # The template for the report
 report_template: |
+  {% macro add_link(link, text) -%}
+      [url={{ link }}]{{ text }}[/url]
+  {%- endmacro %}
   {%- if name %}
   Name: {{ name }}
   {% endif %}
@@ -215,7 +253,23 @@ report_template: |
   {{ differing_file_formats }}
   [/code][/spoiler]
   {% endif %}
-  {%- if links %}
+  {%- if podchaser.webUrl %}
+  [b]Links[/b]
+  {{ add_link(podchaser.webUrl, 'Official Website') }}
+  {%- if podchaser.rssUrl %}
+  {{ add_link(podchaser.rssUrl, 'RSS Feed') }}
+  {%- endif %}
+  {%- if podchaser.spotifyId %}
+  {{ add_link('https://open.spotify.com/show/' ~ podchaser.spotifyId, 'Spotify') }}
+  {%- endif %}
+  {%- if podchaser.applePodcastsId %}
+  {{ add_link('https://podcasts.apple.com/us/podcast/id' ~ podchaser.applePodcastsId, 'Apple Podcasts') }}
+  {%- endif %}
+  {%- if podchaser.url %}
+  {{ add_link(podchaser.url, 'Podchaser') }}
+  {%- endif %}
+  {% endif %}
+  {%- if links and not podchaser.webUrl %}
   {{ links }}
   {% endif %}
   --- Torrent Description ---

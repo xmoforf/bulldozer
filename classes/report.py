@@ -136,13 +136,15 @@ class Report:
                         for file in files:
                             differing_file_formats += f"  {file.name}\n"
             if differing_file_formats:
-                # remove the last newline
                 data['differing_file_formats'] = differing_file_formats[:-1]
 
             if not check_files_only:
                 links = self.podcast.metadata.get_links()
                 if links:
                     data['links'] = template.get_links(links)
+
+                for api, api_data in self.podcast.metadata.api_data.items():
+                    data[api] = api_data
 
             log(f"Writing report to {output_filename}", "debug")
 

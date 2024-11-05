@@ -11,6 +11,7 @@ from pathlib import Path
 from yaspin import yaspin
 from titlecase import titlecase
 from logging.handlers import RotatingFileHandler
+from .cache import Cache
 
 def run_command(command, progress_description=None, track_progress=False, total_episodes=None):
     """
@@ -53,25 +54,42 @@ def spinner(text):
     with yaspin(text=text, color="cyan") as spin:
         yield spin
 
+def deep_merge(base, user):
+    for key, value in user.items():
+        if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+
 def load_config():
     """
-    Load the configuration from the 'config.yaml' file.
+    Load the configuration settings.
 
     :return: The configuration settings.
     """
     global config
-    config_file = Path("config.yaml")
-    if not config_file.exists():
-        logging.error("Error: 'config.yaml' not found.")
+    base_config_file = Path("config.default.yaml")
+    user_config_file = Path("config.yaml")
+    if not base_config_file.exists():
+        log("'config.default.yaml' not found.", "error")
         return None
+    with open(base_config_file, 'r') as base_file:
+        base_config = yaml.safe_load(base_file)
 
-    with config_file.open("r") as f:
-        config = yaml.safe_load(f)
-
-    if not config:
-        logging.error("Error: Failed to load config file.")
+    if not base_config:
+        log("Failed to load base config file.", "error")
         return None
     
+    try:
+        with open(user_config_file, 'r') as user_file:
+            user_config = yaml.safe_load(user_file)
+    except FileNotFoundError:
+        log("'config.yaml' not found, will only use defaults.", "debug")
+        user_config = {}
+
+    deep_merge(base_config, user_config)
+    config = base_config
+
     return config
 
 def setup_logging(log_level, config=None):
@@ -119,6 +137,8 @@ def log(text, level="info"):
         logging.warning(text)
     elif level == "error":
         logging.error(text)
+    elif level == "critical":
+        logging.critical(text)
     elif level == "debug":
         logging.debug(text)
     else:
@@ -132,12 +152,14 @@ def announce(text, type=None):
     :param type: The type of announcement.
     """
     prepend = "  "
-    if type == "error":
+    if type == "critical":
         prepend = "❌"
+    if type == "error":
+        prepend = "‼️"
     if type == "warning":
         prepend = "⚠️"
     if type == "info":
-        prepend = "ℹ️"
+        prepend = "❕"
     if type == "celebrate":
         prepend = "🎉"
     print(f"{prepend}{text}")
@@ -288,3 +310,26 @@ def find_case_insensitive_files(pattern, folder_path='.'):
         if fnmatch.fnmatch(file.name.lower(), pattern):
             matches.append(folder_path / file.name)
     return matches
+
+def get_from_cache(key):
+    """
+    Get data from the cache.
+
+    :param key: The key to get the data for.
+    :return: The data.
+    """
+    global config
+    cache = Cache(config)
+    return cache.get(key)
+
+def write_to_cache(key, data):
+    """
+    Write data to the cache.
+
+    :param key: The key to write the data to.
+    :param data: The data to write.
+    :return: True if the data was written successfully, False otherwise.
+    """
+    global config
+    cache = Cache(config)
+    return cache.write(key, data)

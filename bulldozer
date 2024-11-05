@@ -9,6 +9,7 @@ from classes.podcast import Podcast
 from classes.torrent_creator import TorrentCreator
 from classes.utils import load_config, setup_logging, announce, ask_yes_no
 from classes.report import Report
+from classes.apis.podchaser import Podchaser
 
 config = load_config()
 
@@ -19,7 +20,8 @@ def main(input, censor_rss):
     :param input: The input to the script, can be a directory path, RSS feed URL, or local RSS file path
     :param censor_rss: Whether to censor the RSS feed or not
     """
-    print("· • —– ++ ---| Bulldozer v0.5.1 |--- ++ —– • ·")
+    global config
+    print("· • —– ++ ---| Bulldozer v0.5.2 |--- ++ —– • ·")
 
     if os.path.isdir(input):
         folder_path = Path(input)
@@ -31,9 +33,7 @@ def main(input, censor_rss):
         temp_dir = Path(output_dir) / 'download_temp'
         temp_dir.mkdir(parents=True, exist_ok=True)
         podcast = Podcast("unknown podcast", temp_dir, source_rss_file=source_rss_file, config=config, censor_rss=censor_rss)
-        episode_template = config.get("pdl_episode_template", "{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}")
-        threads = config.get("threads", 1)
-        podcast.download_episodes(episode_template, threads)
+        podcast.download_episodes()
         name = podcast.name
         folder_path = temp_dir
 
@@ -41,7 +41,8 @@ def main(input, censor_rss):
     podcast.organize_files()
     # This is hacky, but since files are renamed, and possibly removed, we need to rerun this
     podcast.analyze_files()
-    if not podcast.metadata.load():
+    podcast.metadata.load()
+    if not podcast.metadata.has_data:
         announce(f"Failed to load metadata for {name}, skipping report generation", "warning")
     else:
         report  = Report(podcast, config)
@@ -68,7 +69,7 @@ def check_files(input):
         report = Report(podcast, config)
         report.generate(True)
     else:
-        announce(f"Folder {folder_path} does not exist", "error")
+        announce(f"Folder {folder_path} does not exist", "critical")
 
 
 def create_torrent(podcast, announce_url):

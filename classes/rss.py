@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from titlecase import titlecase
 from .utils import spinner, get_metadata_directory, log
-from .utils import special_capitalization, announce, archive_metadata
+from .utils import special_capitalization, archive_metadata, ask_yes_no, announce
 
 class Rss:
     def __init__(self, podcast, source_rss_file, config, censor_rss):
@@ -96,15 +96,19 @@ class Rss:
             self.metadata['name'] = self.extract_folder_name_from()
             if not self.metadata['name']:
                 spin.fail("✖")
-                log("Failed to extract name from RSS feed", "error")
+                log("Failed to extract name from RSS feed", "critical")
                 exit(1)
 
             new_folder_path = self.podcast.folder_path.parent / f'{self.metadata['name']}'
             if new_folder_path.exists():
                 spin.fail("✖")
-                announce(f"Folder {new_folder_path} already exists - can't continue", "error")
-                log(f"Folder {new_folder_path} already exists", "error")
-                exit(1)
+                log(f"Folder {new_folder_path} already exists", "critical")
+                if not ask_yes_no("Folder already exists, do you want to overwrite it?"):
+                    announce("Exiting, cya later!", "info")
+                    exit(1)
+
+                shutil.rmtree(new_folder_path)
+
             self.podcast.folder_path.rename(new_folder_path)
             log(f"Folder renamed to {new_folder_path}", "debug")
             self.podcast.folder_path = new_folder_path
@@ -130,7 +134,7 @@ class Rss:
                 spin.ok("✔")
             except requests.RequestException as e:
                 spin.fail("✘")
-                log(f"Failed to download RSS feed", "error")
+                log(f"Failed to download RSS feed", "critical")
                 log(e, "debug")
                 raise
     
@@ -232,9 +236,8 @@ class Rss:
         if channel is not None:
             for network in self.config.get('premium_networks', []):
                 if not network.get('tag') or not network.get('text') or not network.get('name'):
-                    announce("Invalid premium network configuration", "error")
                     log(f"Invalid premium network configuration: {network}", "debug")
-                    exit(1)
+                    continue
                 tag = channel.find(network['tag'])
                 if tag is not None:
                     if network['text'] in tag.text:
