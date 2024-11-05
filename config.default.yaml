@@ -35,6 +35,10 @@ dupecheck_url: https://tracker.com/api/torrents/filter
 # How the RSS feed should be censored. Can be 'delete', 'edit'
 rss_censor_mode: delete
 
+## API Settings
+# The Podchaser API tokenq
+podchaser_token: null
+
 ## podcast-dl Settings
 # The template for the podcast download
 pdl_episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}'
@@ -229,3 +233,30 @@ logfile_size_mb: 1
 
 # The number of log files to keep
 logfile_count: 5
+
+## Podchaser settings
+# The fields to get from the Podchaser API
+podchaser_fields:
+  - id
+  - title
+  - description
+  - author
+  - url
+  - webUrl
+  - rssUrl
+  - language
+  - status
+  - numberOfEpisodes
+  - avgEpisodeLength
+  - daysBetweenEpisodes
+  - startDate
+  - latestEpisodeDate
+  - applePodcastsId
+  - spotifyId
+  - itunesID
+  - networks:
+      - id
+      - title
+      - url
+  - categories:
+      - title
