@@ -54,6 +54,13 @@ def spinner(text):
     with yaspin(text=text, color="cyan") as spin:
         yield spin
 
+def deep_merge(base, user):
+    for key, value in user.items():
+        if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+
 def load_config():
     """
     Load the configuration settings.
@@ -80,9 +87,9 @@ def load_config():
         log("'config.yaml' not found, will only use defaults.", "debug")
         user_config = {}
 
-    config = {**base_config, **user_config}
+    deep_merge(base_config, user_config)
 
-    return config
+    return base_config
 
 def setup_logging(log_level, config=None):
     """
