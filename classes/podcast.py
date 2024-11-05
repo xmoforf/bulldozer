@@ -54,8 +54,8 @@ class Podcast:
 
         self.check_for_duplicates()
 
-        episode_template = self.config.get("pdl_episode_template", "{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}")
-        threads = self.config.get("threads", 1)
+        episode_template = self.config.get("podcast_dl", {}).get('episode_template', "{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}")
+        threads = self.config.get("podcast_dl", {}).get("threads", 1)
 
         command = (
             f'podcast-dl --file "{self.rss.get_file_path()}" --out-dir "{self.folder_path}" '

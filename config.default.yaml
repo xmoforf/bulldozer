@@ -36,25 +36,45 @@ dupecheck_url: https://tracker.com/api/torrents/filter
 rss_censor_mode: delete
 
 ## Cache settings
-# The directory to store the cache
-cache_directory: /home/user/podcasts/cache
-
-# The number of hours to keep the cache
-cache_hours: 24
+cache:
+  directory: /home/user/podcasts/cache # The directory to store the cache
+  hours: 24 # The number of hours to keep the cache
 
 ## API Settings
-# The Podchaser API token
-podchaser_token: null
-
-# Indicates if the Podchaser API should be used
-podchaser_active: false
+# The Podchaser API settings
+podchaser: 
+  token: null # The Podchaser API token
+  active: false # Whether to use the Podchaser API
+  fields: # The fields to retrieve from the API
+    - id
+    - title
+    - description
+    - author:
+      - name
+    - url
+    - webUrl
+    - rssUrl
+    - language
+    - status
+    - numberOfEpisodes
+    - avgEpisodeLength
+    - daysBetweenEpisodes
+    - startDate
+    - latestEpisodeDate
+    - applePodcastsId
+    - spotifyId
+    - itunesID
+    - networks:
+      - id
+      - title
+      - url
+    - categories:
+      - title
 
 ## podcast-dl Settings
-# The template for the podcast download
-pdl_episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}'
-
-# The number of threads to use for podcast downloads
-pdl_threads: 4
+podcast_dl:
+  episode_template: '{{podcast_title}} - {{release_year}}-{{release_month}}-{{release_day}} {{title}}' # The template for the episode name
+  threads: 4 # Number of threads to use for downloading
 
 ## Various settings
 # The script will ask if you want to delete files matching these strings
@@ -243,31 +263,3 @@ logfile_size_mb: 1
 
 # The number of log files to keep
 logfile_count: 5
-
-## Podchaser settings
-# The fields to get from the Podchaser API
-podchaser_fields:
-  - id
-  - title
-  - description
-  - author:
-    - name
-  - url
-  - webUrl
-  - rssUrl
-  - language
-  - status
-  - numberOfEpisodes
-  - avgEpisodeLength
-  - daysBetweenEpisodes
-  - startDate
-  - latestEpisodeDate
-  - applePodcastsId
-  - spotifyId
-  - itunesID
-  - networks:
-    - id
-    - title
-    - url
-  - categories:
-    - title

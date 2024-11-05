@@ -12,8 +12,8 @@ class Cache:
         The Cache class is responsible for caching data to reduce the number of requests.
         """
         self.config = config
-        self.cache_hours = self.config.get('cache_hours', 24)
-        self.cache_directory = self.config.get('cache_directory', None)
+        self.cache_hours = self.config.get('cache', {}).get('hours', 24)
+        self.cache_directory = self.config.get('cache', {}).get('directory', None)
         if self.cache_directory:
             self.cache_directory = Path(self.cache_directory)
             self.check_cache_directory()

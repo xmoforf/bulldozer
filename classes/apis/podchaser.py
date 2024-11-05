@@ -123,6 +123,8 @@ class Podchaser:
 
             if ask_yes_no(f"Continue with {title} ({url})"):
                 return podcast
+            
+        return None
 
             
             
