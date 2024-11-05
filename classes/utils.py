@@ -141,8 +141,10 @@ def announce(text, type=None):
     :param type: The type of announcement.
     """
     prepend = "  "
-    if type == "error":
+    if type == "critical":
         prepend = "❌"
+    if type == "error":
+        prepend = "❗️"
     if type == "warning":
         prepend = "⚠️"
     if type == "info":
