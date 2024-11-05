@@ -94,8 +94,10 @@ unwanted_files:
 premium_networks:
   - text: Wondery+
     tag: title
+    name: Wondery+
   - text: patreon.com
     tag: link
+    name: Patreon
 
 # Decides if the premium tag should be included in the name
 include_premium_tag: true
