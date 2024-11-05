@@ -11,6 +11,7 @@ from pathlib import Path
 from yaspin import yaspin
 from titlecase import titlecase
 from logging.handlers import RotatingFileHandler
+from .cache import Cache
 
 def run_command(command, progress_description=None, track_progress=False, total_episodes=None):
     """
@@ -299,3 +300,26 @@ def find_case_insensitive_files(pattern, folder_path='.'):
         if fnmatch.fnmatch(file.name.lower(), pattern):
             matches.append(folder_path / file.name)
     return matches
+
+def get_from_cache(key):
+    """
+    Get data from the cache.
+
+    :param key: The key to get the data for.
+    :return: The data.
+    """
+    global config
+    cache = Cache(config)
+    return cache.get(key)
+
+def write_to_cache(key, data):
+    """
+    Write data to the cache.
+
+    :param key: The key to write the data to.
+    :param data: The data to write.
+    :return: True if the data was written successfully, False otherwise.
+    """
+    global config
+    cache = Cache(config)
+    return cache.write(key, data)
