@@ -35,9 +35,19 @@ dupecheck_url: https://tracker.com/api/torrents/filter
 # How the RSS feed should be censored. Can be 'delete', 'edit'
 rss_censor_mode: delete
 
+## Cache settings
+# The directory to store the cache
+cache_directory: /home/user/podcasts/cache
+
+# The number of hours to keep the cache
+cache_hours: 24
+
 ## API Settings
-# The Podchaser API tokenq
+# The Podchaser API token
 podchaser_token: null
+
+# Indicates if the Podchaser API should be used
+podchaser_active: false
 
 ## podcast-dl Settings
 # The template for the podcast download
@@ -240,7 +250,8 @@ podchaser_fields:
   - id
   - title
   - description
-  - author
+  - author:
+    - name
   - url
   - webUrl
   - rssUrl
@@ -255,8 +266,8 @@ podchaser_fields:
   - spotifyId
   - itunesID
   - networks:
-      - id
-      - title
-      - url
+    - id
+    - title
+    - url
   - categories:
-      - title
+    - title
