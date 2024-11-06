@@ -79,8 +79,8 @@ class Podnews:
                 if match:
                     rating_count = match.group(1)
 
-        selected_podcast['apple_rating'] = rating
-        selected_podcast['apple_rating_count'] = rating_count
+        selected_podcast['appleRating'] = rating
+        selected_podcast['appleRatingCount'] = rating_count
         return selected_podcast
         
     def find_podcast(self, name):
