@@ -1,4 +1,4 @@
-# podcastindex.py
+# podnews.py
 import requests
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup

@@ -1,4 +1,4 @@
-# metadata.py
+# podcast_metadata.py
 import json
 import re
 from .utils import log, archive_metadata, open_file_case_insensitive
