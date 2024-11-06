@@ -61,6 +61,8 @@ podchaser:
     - daysBetweenEpisodes
     - startDate
     - latestEpisodeDate
+    - ratingAverage
+    - ratingCount
     - applePodcastsId
     - spotifyId
     - networks:
