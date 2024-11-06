@@ -74,7 +74,7 @@ class Cache:
         :return: The data from the cache.
         """
         cache_file = self.get_cache_file(key)
-        if not cache_file or cache_file.size == 0:
+        if not cache_file or cache_file.stat().st_size == 0:
             return None
         with cache_file.open(mode) as f:
             if mode == 'r':
