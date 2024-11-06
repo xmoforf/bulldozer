@@ -40,6 +40,7 @@ class PodcastMetadata:
         """
         self.fetch_additional_data()
         filename = f"{self.podcast.name}.meta.json"
+        self.check_if_podcast_is_complete()
         try:
             with open_file_case_insensitive(filename, self.podcast.folder_path) as f:
                 if not f:
@@ -51,8 +52,20 @@ class PodcastMetadata:
             log(json.JSONDecodeError.msg, "debug")
             return False
         
-        self.format_data()
         return True
+    
+    def check_if_podcast_is_complete(self):
+        """
+        Check if the podcast is complete based on the metadata.
+        """
+        if not self.external_data:
+            self.podcast.completed = False
+
+        if self.external_data.get('podchaser', {}).get('status', 'ACTIVE') != 'ACTIVE':
+            self.podcast.completed = True
+            return
+
+        self.podcast.completed = False
         
     def format_data(self):
         """
@@ -69,6 +82,7 @@ class PodcastMetadata:
         self.get_podchaser_data()
         self.get_podcastindex_data()
         self.get_podnews_data()
+        self.format_data()
 
     def replace_description(self, description):
         """
