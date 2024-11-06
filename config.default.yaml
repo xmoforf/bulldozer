@@ -2,6 +2,11 @@
 # The directory where prepared uploads are stored
 output_dir: /home/user/podcasts
 
+# If this is set, files will always be stored here
+# instead of the parent dir of the podcast. This is
+# mainly useful when generating torrents or reports.
+base_dir: null
+
 # The temporary name for a new download
 temp_dir_name: temp_download
 
