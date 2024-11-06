@@ -146,8 +146,9 @@ class Report:
                 for site, external_data in self.podcast.metadata.external_data.items():
                     data[site] = external_data
 
-            log(f"Writing report to {output_filename}", "debug")
+            log(f"Data passed to the template: {data}", "debug")
 
             with open(output_filename, 'w') as f:
+                log(f"Writing report to {output_filename}", "debug")
                 f.write(template.render(data)[1:])
         spin.ok("✔")
