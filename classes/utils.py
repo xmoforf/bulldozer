@@ -153,11 +153,11 @@ def announce(text, type=None):
     """
     prepend = "  "
     if type == "critical":
-        prepend = "❌"
+        prepend = "🛑"
     if type == "error":
-        prepend = "‼️"
+        prepend = "❌"
     if type == "warning":
-        prepend = "⚠️"
+        prepend = "❗️"
     if type == "info":
         prepend = "❕"
     if type == "celebrate":
