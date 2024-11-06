@@ -143,8 +143,8 @@ class Report:
                 if links:
                     data['links'] = template.get_links(links)
 
-                for api, api_data in self.podcast.metadata.api_data.items():
-                    data[api] = api_data
+                for site, external_data in self.podcast.metadata.external_data.items():
+                    data[site] = external_data
 
             log(f"Writing report to {output_filename}", "debug")
 
