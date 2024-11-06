@@ -20,7 +20,7 @@ def main(input, censor_rss, report_only=False, search_term=None):
     :param censor_rss: Whether to censor the RSS feed or not
     """
     global config
-    print("· • —– ++ ---| Bulldozer v0.5.4 |--- ++ —– • ·")
+    print("· • —– ++ ---| Bulldozer v0.5.5 |--- ++ —– • ·")
 
     if os.path.isdir(input):
         folder_path = Path(input)
