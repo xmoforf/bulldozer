@@ -1,7 +1,8 @@
-# metadata.py
+# podcast_metadata.py
 import json
 import re
 from .utils import log, archive_metadata, open_file_case_insensitive
+from .data_formatter import DataFormatter
 from .apis.podchaser import Podchaser
 from .apis.podcastindex import Podcastindex
 from .scrapers.podnews import Podnews
@@ -19,7 +20,7 @@ class PodcastMetadata:
         self.podcast = podcast
         self.config = config
         self.data = None
-        self.api_data = {}
+        self.external_data = {}
         self.has_data = False
         self.archive = config.get('archive_metadata', False)
 
@@ -39,17 +40,40 @@ class PodcastMetadata:
         """
         self.fetch_additional_data()
         filename = f"{self.podcast.name}.meta.json"
+        self.check_if_podcast_is_complete()
         try:
             with open_file_case_insensitive(filename, self.podcast.folder_path) as f:
                 if not f:
                     return None
                 self.data = json.load(f)
                 self.has_data = True
-            return True
         except json.JSONDecodeError:
             log(f"Invalid JSON in file '{filename}'.", "error")
             log(json.JSONDecodeError.msg, "debug")
             return False
+        
+        return True
+    
+    def check_if_podcast_is_complete(self):
+        """
+        Check if the podcast is complete based on the metadata.
+        """
+        if not self.external_data:
+            self.podcast.completed = False
+
+        if self.external_data.get('podchaser', {}).get('status', 'ACTIVE') != 'ACTIVE':
+            self.podcast.completed = True
+            return
+
+        self.podcast.completed = False
+        
+    def format_data(self):
+        """
+        Format the metadata data using the DataFormatter.
+        """
+        formatter = DataFormatter(self.config)
+        self.data = formatter.format_data(self.data)
+        self.external_data = formatter.format_data(self.external_data)
         
     def fetch_additional_data(self):
         """
@@ -58,6 +82,7 @@ class PodcastMetadata:
         self.get_podchaser_data()
         self.get_podcastindex_data()
         self.get_podnews_data()
+        self.format_data()
 
     def replace_description(self, description):
         """
@@ -146,7 +171,7 @@ class PodcastMetadata:
         
         return self.data['feedUrl']
     
-    def get_api_data(self, api_name, api_class, *args):
+    def get_external_data(self, api_name, api_class, *args):
         """
         Get the data for the podcast from a specified API.
         
@@ -164,10 +189,10 @@ class PodcastMetadata:
         podcast = api_instance.find_podcast(self.podcast.name)
         
         if not podcast:
-            self.api_data[api_name] = {}
+            self.external_data[api_name] = {}
             return False
         
-        self.api_data[api_name] = podcast
+        self.external_data[api_name] = podcast
         self.has_data = True
         return True
     
@@ -175,7 +200,7 @@ class PodcastMetadata:
         """
         Get the Podchaser data for the podcast.
         """
-        return self.get_api_data(
+        return self.get_external_data(
             'podchaser',
             Podchaser,
             self.config.get('podchaser', {}).get('token', None),
@@ -187,7 +212,7 @@ class PodcastMetadata:
         """
         Get the Podcastindex data for the podcast.
         """
-        return self.get_api_data(
+        return self.get_external_data(
             'podcastindex',
             Podcastindex,
             self.config.get('podcastindex', {}).get('key', None),
@@ -199,7 +224,7 @@ class PodcastMetadata:
         """
         Get the Podnews data for the podcast.
         """
-        return self.get_api_data(
+        return self.get_external_data(
             'podnews',
             Podnews,
             self.config.get('podnews', {}).get('url', None)

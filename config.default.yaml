@@ -72,6 +72,11 @@ podchaser:
     - categories:
       - title
   url: https://api.podchaser.com/graphql # The Podchaser API URL
+  formatters: # The formatters to apply to the data
+    - property: description # The property to format
+      method: limit_line_length # The method to apply
+      settings: # The settings for the method
+        max_length: 125 # The maximum length of the line
 
 # The Podcast Index API settings
 podcastindex:

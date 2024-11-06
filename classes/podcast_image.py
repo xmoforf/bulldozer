@@ -1,4 +1,4 @@
-# image.py
+# podcast_image.py
 import pillow_avif
 from PIL import Image
 from .utils import spinner, get_metadata_directory, log, archive_metadata, find_case_insensitive_files

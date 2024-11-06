@@ -61,6 +61,63 @@ def deep_merge(base, user):
         else:
             base[key] = value
 
+def find_extra_keys(base_config, user_config, path=""):
+    """
+    Recursively find extra keys in the user's config that are not present in the default config.
+
+    :param base_config: The default configuration.
+    :param user_config: The user's configuration.
+    :param path: The current path of keys for error reporting.
+    :return: A list of extra keys.
+    """
+    extra_keys = []
+
+    for key in user_config:
+        current_path = f"{path}.{key}" if path else key
+        if key not in base_config:
+            extra_keys.append(current_path)
+        elif isinstance(user_config[key], dict) and isinstance(base_config.get(key), dict):
+            extra_keys.extend(find_extra_keys(base_config[key], user_config[key], current_path))
+
+    return extra_keys
+
+def check_config():
+    """
+    Check the configuration settings.
+
+    :return: True if the configuration is valid, False otherwise.
+    """
+    global config
+    base_config_file = Path("config.default.yaml")
+    user_config_file = Path("config.yaml")
+    if not base_config_file.exists():
+        log("'config.default.yaml' not found.", "error")
+        return False
+    with open(base_config_file, 'r') as base_file:
+        base_config = yaml.safe_load(base_file)
+
+    if not base_config:
+        log("Failed to load base config file.", "error")
+        return False
+    
+    try:
+        with open(user_config_file, 'r') as user_file:
+            user_config = yaml.safe_load(user_file)
+    except FileNotFoundError:
+        log("'config.yaml' not found, no check needed.", "debug")
+        announce("No user config found. It can therefore not be invalid, yay!", "celebrate")
+        return True
+
+    extra_keys = find_extra_keys(base_config, user_config)
+    if extra_keys:
+        announce("Extra keys found in user config:", "warning")
+        for key in extra_keys:
+            announce(f"- {key}")
+        return False
+
+    announce("User config is valid, yay!", "celebrate")
+    return True
+
 def load_config():
     """
     Load the configuration settings.
