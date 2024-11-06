@@ -1,4 +1,5 @@
 # torrent_creator.py
+from pathlib import Path
 from .utils import run_command, log, ask_yes_no
 
 class TorrentCreator:
@@ -17,6 +18,7 @@ class TorrentCreator:
         self.base_dir = base_dir
         if not self.base_dir:
             self.base_dir = self.podcast.folder_path.parent
+        self.base_dir = Path(self.base_dir)
 
     def calculate_piece_size(self, total_size):
         """
