@@ -187,6 +187,9 @@ class PodcastMetadata:
             log(f"{api_name.capitalize()} API is not enabled.", "debug")
             return None
         
+        if not search_term:
+            search_term = self.podcast.name
+
         api_instance = api_class(*args)
         podcast = api_instance.find_podcast(search_term)
         
