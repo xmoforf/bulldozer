@@ -78,9 +78,13 @@ class Report:
                 "start_year_str": start_year_str,
                 "last_episode_date_str": last_episode_date_str,
                 "file_format": file_format,
-                "overall_bitrate": overall_bitrate
+                "overall_bitrate": overall_bitrate,
             }
-            data = {}
+            data = {
+                "file_format": file_format,
+                "overall_bitrate": overall_bitrate,
+                "number_of_files": total_files,
+            }
             name = template.get_name(dynamic_data)
             if name:
                 data['name'] = name
