@@ -3,6 +3,8 @@ import json
 import re
 from .utils import log, archive_metadata, open_file_case_insensitive
 from .apis.podchaser import Podchaser
+from .apis.podcastindex import Podcastindex
+from .scrapers.podnews import Podnews
 
 class PodcastMetadata:
     def __init__(self, podcast, config):
@@ -35,7 +37,7 @@ class PodcastMetadata:
 
         :return: True if the metadata was loaded successfully, False if there was an error, None if the file does not exist.
         """
-        self.fetch_api_data()
+        self.fetch_additional_data()
         filename = f"{self.podcast.name}.meta.json"
         try:
             with open_file_case_insensitive(filename, self.podcast.folder_path) as f:
@@ -49,11 +51,13 @@ class PodcastMetadata:
             log(json.JSONDecodeError.msg, "debug")
             return False
         
-    def fetch_api_data(self):
+    def fetch_additional_data(self):
         """
         Fetch additional metadata from APIs.
         """
         self.get_podchaser_data()
+        self.get_podcastindex_data()
+        self.get_podnews_data()
 
     def replace_description(self, description):
         """
@@ -142,23 +146,64 @@ class PodcastMetadata:
         
         return self.data['feedUrl']
     
+    def get_api_data(self, api_name, api_class, *args):
+        """
+        Get the data for the podcast from a specified API.
+        
+        :param api_name: Name of the API (e.g., 'podchaser', 'podcastindex').
+        :param api_class: The class for interacting with the API (e.g., Podchaser, Podcastindex).
+        :param args: Additional arguments required for the API class constructor.
+        """
+        api_config = self.config.get(api_name, {})
+        
+        if not api_config.get('active', False):
+            log(f"{api_name.capitalize()} API is not enabled.", "debug")
+            return None
+        
+        api_instance = api_class(*args)
+        podcast = api_instance.find_podcast(self.podcast.name)
+        
+        if not podcast:
+            self.api_data[api_name] = {}
+            return False
+        
+        self.api_data[api_name] = podcast
+        self.has_data = True
+        return True
+    
     def get_podchaser_data(self):
         """
         Get the Podchaser data for the podcast.
         """
-        if not self.config.get('podchaser', {}).get('active', False):
-            log("Podchaser API is not enabled.", "debug")
-            return None
-        
-        podchaser = Podchaser(self.config.get('podchaser', {}).get('token', None), self.config.get('podchaser', {}).get('fields', None))
-        podcast = podchaser.find_podcast(self.podcast.name)
-        if not podcast:
-            self.api_data['podchaser'] = {}
-            return False
-        
-        self.api_data['podchaser'] = podcast
-        self.has_data = True
-        return True
+        return self.get_api_data(
+            'podchaser',
+            Podchaser,
+            self.config.get('podchaser', {}).get('token', None),
+            self.config.get('podchaser', {}).get('fields', None),
+            self.config.get('podchaser', {}).get('url', None)
+        )
+    
+    def get_podcastindex_data(self):
+        """
+        Get the Podcastindex data for the podcast.
+        """
+        return self.get_api_data(
+            'podcastindex',
+            Podcastindex,
+            self.config.get('podcastindex', {}).get('key', None),
+            self.config.get('podcastindex', {}).get('secret', None),
+            self.config.get('podcastindex', {}).get('url', None)
+        )
+    
+    def get_podnews_data(self):
+        """
+        Get the Podnews data for the podcast.
+        """
+        return self.get_api_data(
+            'podnews',
+            Podnews,
+            self.config.get('podnews', {}).get('url', None)
+        )
     
     def archive_file(self):
         """
