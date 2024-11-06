@@ -1,6 +1,7 @@
 # cache.py
 from pathlib import Path
 from datetime import datetime
+import pickle
 
 class Cache:
     def __init__(self, config):
@@ -65,7 +66,7 @@ class Cache:
             return False
         return True
     
-    def read_cache(self, key):
+    def read_cache(self, key, mode='r'):
         """
         Read the cache for the given key.
 
@@ -73,35 +74,43 @@ class Cache:
         :return: The data from the cache.
         """
         cache_file = self.get_cache_file(key)
-        if not cache_file:
+        if not cache_file or cache_file.stat().st_size == 0:
             return None
-        with cache_file.open('r') as f:
-            return f.read()
+        with cache_file.open(mode) as f:
+            if mode == 'r':
+                return f.read()
+            if mode == 'rb':
+                return pickle.load(f)
         
-    def get(self, key):
+    def get(self, key, mode='r'):
         """
         Get data from the cache.
 
         :param key: The key to get the data for.
+        :param mode: The mode to get the data in.
         :return: The data from the cache.
         """
         if not self.is_cache_valid(key):
             return None
-        return self.read_cache(key)
+        return self.read_cache(key, mode)
         
-    def write(self, key, data):
+    def write(self, key, data, mode='w'):
         """
         Write data to the cache.
 
         :param key: The key to write the data for.
         :param data: The data to write to the cache.
+        :param mode: The mode to write the data in.
         :return: True if the data was written to the cache, False otherwise.
         """
         cache_file = self.get_cache_file(key)
         if not cache_file:
             return False
-        with cache_file.open('w') as f:
-            f.write(data)
+        with cache_file.open(mode) as f:
+            if mode == 'w':
+                f.write(data)
+            if mode == 'wb':
+                pickle.dump(data, f)
         return True
     
     def clear_cache(self):

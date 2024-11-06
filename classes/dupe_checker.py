@@ -44,7 +44,7 @@ class DupeChecker:
                 announce("Possible duplicates found:", "warning")
                 ask_user = True
                 for torrent in torrents['data']:
-                    announce(f"- {torrent['attributes']['name']}: {torrent['attributes']['details_link']}", "warning")
+                    announce(f"- {torrent['attributes']['name']}: {torrent['attributes']['details_link']}")
             elif report_no_dupes:
                 announce(f'Nothing found for "{self.search_name}"', 'info')
                 

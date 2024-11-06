@@ -8,13 +8,14 @@ Bulldozer is a script designed to automate the process of downloading, organizin
 - Check for duplicate episodes using an external API
 - Organize and analyze downloaded files
 - Generate reports based on the downloaded content
-- Fetching data from the Podchaser API
+- Data fetching from the Podchaser and Podcastindex API
+- Data fetching from Podnews
 - Automatic RSS censoring for matching premium sources
 - Create torrent files for sharing podcast episodes
 
 ## Requirements
 
-- Python 3.x
+- Python 3.12.0+
 - Required Python packages (listed in `requirements.txt`)
 - mktorrent
 - podcast-dl 10.3.1+
@@ -50,6 +51,27 @@ Edit the `config.yaml` file to set up your preferences and API keys. The configu
 
 Note that you do not need to copy the entire file, and you do not need to add values that you don't need to change. This approach means less work when new things are added to `config.default.yaml`.
 
+## Upgrading
+
+Upgrading should be fairly simple, but if you're jumping versions it might get messy. In that case, do a fresh install and copy your settings over. To upgrade do the following:
+
+1. Update the codebase
+    ```sh
+    git pull
+    ````
+
+2. Make sure requirements are up-to-date
+    ```sh
+     pip install -r requirements.txt
+    ```
+
+3. Run the config checker to see if your config is outdated
+    ```sh
+    python bulldozer --check-config
+    ```
+    The config checker will let you know if there are settings in your config that are outdated (ie, the don't exist in the default config).
+
+
 ## Usage
 
 ### Command Line Interface
@@ -59,8 +81,13 @@ Run the script using the command line interface:
 ```sh
 python bulldozer <input>
 ```
-
 `<input>`: RSS feed URL, directory path, local RSS file path, or name to dupecheck.
+
+Note that if your on Linux, you should be able to run the script in this way:
+```sh
+chmod +x bulldozer
+./bulldozer <input>
+```
 
 ### Options
 - `--censor-rss`: Make sure the RSS feed is censored.
@@ -107,3 +134,5 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 - [mutagen](https://pypi.org/project/mutagen/) for audio metadata handling.
 - [titlecase](https://pypi.org/project/titlecase/) for title casing.
 - [Podchaser API](https://api-docs.podchaser.com/docs/overview) for additional metadata.
+- [Podcastindex API](https://podcastindex.org) for additional metadata.
+- [Podnews](https://podnews.net) for additional metadata.

@@ -43,8 +43,8 @@ cache:
 ## API Settings
 # The Podchaser API settings
 podchaser: 
-  token: null # The Podchaser API token
   active: false # Whether to use the Podchaser API
+  token: null # The Podchaser API token
   fields: # The fields to retrieve from the API
     - id
     - title
@@ -61,6 +61,8 @@ podchaser:
     - daysBetweenEpisodes
     - startDate
     - latestEpisodeDate
+    - ratingAverage
+    - ratingCount
     - applePodcastsId
     - spotifyId
     - networks:
@@ -69,6 +71,20 @@ podchaser:
       - url
     - categories:
       - title
+  url: https://api.podchaser.com/graphql # The Podchaser API URL
+
+# The Podcast Index API settings
+podcastindex:
+  active: false # Whether to use the Podcast Index API
+  key: null # The Podcast Index API key
+  secret: null # The Podcast Index API secret
+  url: https://api.podcastindex.org/api/1.0/search/byterm?q= # The Podcast Index API URL
+
+## Scraper settings
+# Podnews settings
+podnews:
+  active: false # Whether to use the Podnews scraper
+  url: https://podnews.net/search?q= # The Podnews Search URL
 
 ## podcast-dl Settings
 podcast_dl:

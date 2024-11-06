@@ -153,11 +153,11 @@ def announce(text, type=None):
     """
     prepend = "  "
     if type == "critical":
-        prepend = "❌"
+        prepend = "🛑"
     if type == "error":
-        prepend = "‼️"
+        prepend = "❌"
     if type == "warning":
-        prepend = "⚠️"
+        prepend = "❗️"
     if type == "info":
         prepend = "❕"
     if type == "celebrate":
@@ -311,7 +311,7 @@ def find_case_insensitive_files(pattern, folder_path='.'):
             matches.append(folder_path / file.name)
     return matches
 
-def get_from_cache(key):
+def get_from_cache(key, mode='r'):
     """
     Get data from the cache.
 
@@ -320,9 +320,9 @@ def get_from_cache(key):
     """
     global config
     cache = Cache(config)
-    return cache.get(key)
+    return cache.get(key, mode)
 
-def write_to_cache(key, data):
+def write_to_cache(key, data, mode='w'):
     """
     Write data to the cache.
 
@@ -332,4 +332,4 @@ def write_to_cache(key, data):
     """
     global config
     cache = Cache(config)
-    return cache.write(key, data)
+    return cache.write(key, data, mode)

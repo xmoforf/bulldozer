@@ -4,7 +4,7 @@ import json
 from ..utils import spinner, log, announce, ask_yes_no, get_from_cache, write_to_cache
 
 class Podchaser:
-    def __init__(self, token, fields):
+    def __init__(self, token, fields, url):
         """
         Initialize the Podchaser API with the token and fields.
 
@@ -16,6 +16,7 @@ class Podchaser:
         self.token = token
         self.results = None
         self.fields = fields
+        self.url = url
 
     def build_fields(self, fields, indent_level=7):
         """
@@ -52,7 +53,6 @@ class Podchaser:
         :return: The data from the API.
         """
         with spinner(f"Searching for podcast {name} on Podchaser") as spin:
-                url = f"https://api.podchaser.com/graphql"
                 headers = {
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {self.token}"
@@ -81,7 +81,7 @@ class Podchaser:
                     "variables": variables,
                 }
 
-                response = requests.post(url, json=payload, headers=headers)
+                response = requests.post(self.url, json=payload, headers=headers)
                 if response.status_code == 200:
                     data = response.json()
                     if 'errors' in data:
@@ -116,7 +116,7 @@ class Podchaser:
         
         podcasts = data.get('data', {}).get('podcasts', {}).get('data', [])
 
-        announce(f"Found {len(podcasts)} podcasts matching '{name}'", "info")
+        announce(f"Found {len(podcasts)} podcasts matching '{name}' at Podchaser", "info")
         for podcast in podcasts:
             title = podcast.get('title')
             url = podcast.get('url')
