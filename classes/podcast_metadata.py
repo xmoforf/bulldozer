@@ -32,13 +32,14 @@ class PodcastMetadata:
         """
         return self.podcast.folder_path / f'{self.podcast.name}.meta.json'
 
-    def load(self):
+    def load(self, search_term=None):
         """
         Load the metadata from the file, and fetch data from the apis.
 
+        :param search_term: The search term to use for finding the podcast.
         :return: True if the metadata was loaded successfully, False if there was an error, None if the file does not exist.
         """
-        self.fetch_additional_data()
+        self.fetch_additional_data(search_term)
         filename = f"{self.podcast.name}.meta.json"
         self.check_if_podcast_is_complete()
         try:
@@ -75,13 +76,13 @@ class PodcastMetadata:
         self.data = formatter.format_data(self.data)
         self.external_data = formatter.format_data(self.external_data)
         
-    def fetch_additional_data(self):
+    def fetch_additional_data(self, search_term=None):
         """
         Fetch additional metadata from APIs.
         """
-        self.get_podchaser_data()
-        self.get_podcastindex_data()
-        self.get_podnews_data()
+        self.get_podchaser_data(search_term)
+        self.get_podcastindex_data(search_term)
+        self.get_podnews_data(search_term)
         self.format_data()
 
     def replace_description(self, description):
@@ -171,12 +172,13 @@ class PodcastMetadata:
         
         return self.data['feedUrl']
     
-    def get_external_data(self, api_name, api_class, *args):
+    def get_external_data(self, api_name, api_class, search_term, *args):
         """
         Get the data for the podcast from a specified API.
         
         :param api_name: Name of the API (e.g., 'podchaser', 'podcastindex').
         :param api_class: The class for interacting with the API (e.g., Podchaser, Podcastindex).
+        :param search_term: The search term to use for finding the podcast.
         :param args: Additional arguments required for the API class constructor.
         """
         api_config = self.config.get(api_name, {})
@@ -186,7 +188,7 @@ class PodcastMetadata:
             return None
         
         api_instance = api_class(*args)
-        podcast = api_instance.find_podcast(self.podcast.name)
+        podcast = api_instance.find_podcast(search_term)
         
         if not podcast:
             self.external_data[api_name] = {}
@@ -196,37 +198,46 @@ class PodcastMetadata:
         self.has_data = True
         return True
     
-    def get_podchaser_data(self):
+    def get_podchaser_data(self, search_term=None):
         """
         Get the Podchaser data for the podcast.
+
+        :param search_term: The search term to use for finding the podcast.
         """
         return self.get_external_data(
             'podchaser',
             Podchaser,
+            search_term,
             self.config.get('podchaser', {}).get('token', None),
             self.config.get('podchaser', {}).get('fields', None),
             self.config.get('podchaser', {}).get('url', None)
         )
     
-    def get_podcastindex_data(self):
+    def get_podcastindex_data(self, search_term=None):
         """
         Get the Podcastindex data for the podcast.
+
+        :param search_term: The search term to use for finding the podcast.
         """
         return self.get_external_data(
             'podcastindex',
             Podcastindex,
+            search_term,
             self.config.get('podcastindex', {}).get('key', None),
             self.config.get('podcastindex', {}).get('secret', None),
             self.config.get('podcastindex', {}).get('url', None)
         )
     
-    def get_podnews_data(self):
+    def get_podnews_data(self, search_term=None):
         """
         Get the Podnews data for the podcast.
+
+        :param search_term: The search term to use for finding the podcast.
         """
         return self.get_external_data(
             'podnews',
             Podnews,
+            search_term,
             self.config.get('podnews', {}).get('url', None)
         )
     
