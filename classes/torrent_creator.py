@@ -1,18 +1,24 @@
 # torrent_creator.py
+from pathlib import Path
 from .utils import run_command, log, ask_yes_no
 
 class TorrentCreator:
-    def __init__(self, podcast, announce_url):
+    def __init__(self, podcast, announce_url, base_dir):
         """
         Initialize the TorrentCreator with the podcast and announce URL.
 
         :param podcast: The podcast object containing information about the podcast.
         :param announce_url: The announce URL for the torrent.
+        :param base_dir: The base directory for the podcast.
 
         The TorrentCreator class is responsible for creating the torrent file for the podcast.
         """
         self.podcast = podcast
         self.announce_url = announce_url
+        self.base_dir = base_dir
+        if not self.base_dir:
+            self.base_dir = self.podcast.folder_path.parent
+        self.base_dir = Path(self.base_dir)
 
     def calculate_piece_size(self, total_size):
         """
@@ -43,7 +49,7 @@ class TorrentCreator:
 
         :param piece_size: The piece size for the torrent.
         """
-        torrent_file_path = self.podcast.folder_path.parent / f'{self.podcast.folder_path.name}.torrent'
+        torrent_file_path = self.base_dir / f'{self.podcast.folder_path.name}.torrent'
         if torrent_file_path.exists():
             if not ask_yes_no(f"Torrent file {torrent_file_path} already exists. Replace?"):
                 return

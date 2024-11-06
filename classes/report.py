@@ -1,5 +1,6 @@
 # report.py
 from collections import Counter
+from pathlib import Path
 from .utils import spinner, log, format_last_date, ask_yes_no
 from .report_template import ReportTemplate
 
@@ -22,10 +23,14 @@ class Report:
 
         :param check_files_only: If True, only check for files and do not generate the full report.
         """
+        base_dir = self.config.get('base_dir', None)
+        if not base_dir:
+            base_dir = self.podcast.folder_path.parent
+        base_dir = Path(base_dir)
         template = ReportTemplate(self.podcast, self.config)
-        output_filename = self.podcast.folder_path.parent / f'{self.podcast.name}.txt'
+        output_filename = base_dir / f'{self.podcast.name}.txt'
         if check_files_only:
-            output_filename = self.podcast.folder_path.parent / f'{self.podcast.name}.files.txt'
+            output_filename = base_dir / f'{self.podcast.name}.files.txt'
 
         if output_filename.exists():
             if not ask_yes_no(f"Report {output_filename} already exists. Overwrite?"):
@@ -78,9 +83,13 @@ class Report:
                 "start_year_str": start_year_str,
                 "last_episode_date_str": last_episode_date_str,
                 "file_format": file_format,
-                "overall_bitrate": overall_bitrate
+                "overall_bitrate": overall_bitrate,
             }
-            data = {}
+            data = {
+                "file_format": file_format,
+                "overall_bitrate": overall_bitrate,
+                "number_of_files": total_files,
+            }
             name = template.get_name(dynamic_data)
             if name:
                 data['name'] = name
