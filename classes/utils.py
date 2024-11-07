@@ -243,7 +243,7 @@ def take_input(prompt):
     :return: The user's input.
     """
     while True:
-        response = input(f"⌨️{prompt}: ").strip()
+        response = input(f"❓{prompt}: ").strip()
         if response == '':
             return None
         else:
