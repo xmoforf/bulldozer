@@ -235,70 +235,7 @@ links_section_template: |
   {{ links }}
 
 # The template for the report
-report_template: |
-  {% macro add_link(link, text) -%}
-      [url={{ link }}]{{ text }}[/url]
-  {%- endmacro %}
-  {%- if name %}
-  Name: {{ name }}
-  {% endif %}
-  {%- if tags %}
-  Tags: {{ tags }}
-  {% endif %}
-  {%- if description %}
-  --- Torrent Description ---
-
-  [b]Official Description[/b]
-  [quote]{{ description }}[/quote]
-  {% endif %}
-  {%- if last_episode_date %}
-  [b]Last Episode Included[/b]
-  {{ last_episode_date }}
-  {% endif %}
-  {%- if bitrate_breakdown %}
-  [b]Bitrate Breakdown[/b]
-  [spoiler][code]
-  {{ bitrate_breakdown }}
-  [/code][/spoiler]
-  {% endif %}
-  {%- if differing_bitrates %}
-  [b]Differing Bitrates[/b]
-  [spoiler][code]
-  {{ differing_bitrates }}
-  [/code][/spoiler]
-  {% endif %}
-  {%- if file_format_breakdown %}
-  [b]File Format Breakdown[/b]
-  [spoiler][code]
-  {{ file_format_breakdown }}
-  [/code][/spoiler]
-  {% endif %}
-  {%- if differing_file_formats %}
-  [b]Differing File Formats[/b]
-  [spoiler][code]
-  {{ differing_file_formats }}
-  [/code][/spoiler]
-  {% endif %}
-  {%- if podchaser.webUrl %}
-  [b]Links[/b]
-  {{ add_link(podchaser.webUrl, 'Official Website') }}
-  {%- if podchaser.rssUrl %}
-  {{ add_link(podchaser.rssUrl, 'RSS Feed') }}
-  {%- endif %}
-  {%- if podchaser.spotifyId %}
-  {{ add_link('https://open.spotify.com/show/' ~ podchaser.spotifyId, 'Spotify') }}
-  {%- endif %}
-  {%- if podchaser.applePodcastsId %}
-  {{ add_link('https://podcasts.apple.com/us/podcast/id' ~ podchaser.applePodcastsId, 'Apple Podcasts') }}
-  {%- endif %}
-  {%- if podchaser.url %}
-  {{ add_link(podchaser.url, 'Podchaser') }}
-  {%- endif %}
-  {% endif %}
-  {%- if links and not podchaser.webUrl %}
-  {{ links }}
-  {% endif %}
-  --- Torrent Description ---
+template_file: default
 
 ## Logging settings
 # The log level for the application

@@ -75,7 +75,7 @@ class Podnews:
             if small_tag:
                 # Use regex to extract the number
                 import re
-                match = re.search(r'via (\d+) ratings', small_tag.text)
+                match = re.search(r'via ([\d,]+) ratings', small_tag.text)
                 if match:
                     rating_count = match.group(1)
 
