@@ -14,12 +14,12 @@ class ReportTemplate:
         """
         self.podcast = podcast
         self.config = config
-        self.report_template = config.get('report_template', 'default')
+        self.template_file = config.get('template_file', 'default')
         self.template = None
-        with open(f"templates/{self.report_template}.tpl", "r") as template_file:
+        with open(f"templates/{self.template_file}.tpl", "r") as template_file:
             self.template = Template(template_file.read())
         if not self.template:
-            log(f"Template {self.report_template} not found. Will only include description.", "warning")
+            log(f"Template {self.template_file} not found. Will only include description.", "warning")
             self.template = Template("{{ description }}")
         self.name_template = Template(config.get('name_template', '{{ podcast_name }}'))
         self.link_template = Template(config.get('link_template', '{{ link }}'))

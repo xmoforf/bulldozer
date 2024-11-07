@@ -235,7 +235,7 @@ links_section_template: |
   {{ links }}
 
 # The template for the report
-report_template: default
+template_file: default
 
 ## Logging settings
 # The log level for the application
