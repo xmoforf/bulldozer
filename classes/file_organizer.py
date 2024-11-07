@@ -130,7 +130,7 @@ class FileOrganizer:
             
             if missing_episode_number:
                 for f in missing_episode_number:
-                    if f.is_file() and not fnmatch.fnmatch(f.name, '*.mp3') and not fnmatch.fnmatch(f.name, '*.m4a'):
+                    if (f.is_file() and not fnmatch.fnmatch(f.name, '*.mp3') and not fnmatch.fnmatch(f.name, '*.m4a')) or not f.is_file():
                         continue
                     episode_number = take_input(f"Episode number for '{f}' (blank skips)")
                     if episode_number:
