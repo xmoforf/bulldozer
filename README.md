@@ -96,6 +96,7 @@ chmod +x bulldozer
 - `--make-torrent`: Only create a torrent file.
 - `--create-report`: Only create a report.
 - `--check-config`: Check if user config is valid.
+- `--search-term`: Use <input> as search term instead of podcast name.
 - `--log-level`: Set the logging level (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL).
 
 ## Project Structure
