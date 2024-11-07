@@ -125,10 +125,13 @@ class FileOrganizer:
         has_episode_number = any(pattern.match(f.name) for f in files)
         
         if has_episode_number:
+                
             missing_episode_number = [f for f in files if not pattern.match(f.name)]
             
             if missing_episode_number:
                 for f in missing_episode_number:
+                    if f.is_file() and not fnmatch.fnmatch(f.name, '*.mp3') and not fnmatch.fnmatch(f.name, '*.m4a'):
+                        continue
                     episode_number = take_input(f"Episode number for '{f}' (blank skips)")
                     if episode_number:
                         original_pattern = re.compile(self.config.get('numbered_episode_pattern', r'^(.*) - (\d{4}-\d{2}-\d{2}) (.*?)(\.\w+)'))
