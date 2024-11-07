@@ -94,6 +94,8 @@ chmod +x bulldozer
 - `--check-files`: Only check the files.
 - `--dupecheck`: Search the API for <input>.
 - `--make-torrent`: Only create a torrent file.
+- `--create-report`: Only create a report.
+- `--check-config`: Check if user config is valid.
 - `--log-level`: Set the logging level (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL).
 
 ## Project Structure
