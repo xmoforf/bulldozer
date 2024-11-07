@@ -73,7 +73,7 @@ class FileOrganizer:
         :param file_path: The path to the file.
         :param ep_nr_at_end_file_pattern: The pattern to match episode numbers at the end of the file name.
         """
-        match = ep_nr_at_end_file_pattern.match(self.podcast.folder_path.name)
+        match = ep_nr_at_end_file_pattern.match(file_path.name)
         if match:
             prefix = match.group(1)
             date_part = match.group(2)
