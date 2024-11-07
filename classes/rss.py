@@ -126,7 +126,14 @@ class Rss:
         """
         with spinner("Downloading RSS feed") as spin:
             try:
-                response = requests.get(self.source_rss_file)
+                # Add headers to mimic a browser
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Connection": "keep-alive"
+                }
+                response = requests.get(self.source_rss_file, headers=headers)
                 response.raise_for_status()
                 with self.get_file_path().open('wb') as rss_file:
                     rss_file.write(response.content)
