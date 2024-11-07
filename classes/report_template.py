@@ -1,5 +1,6 @@
 # template.py
 from jinja2 import Template
+from .utils import log
 
 class ReportTemplate:
     def __init__(self, podcast, config):
@@ -13,7 +14,13 @@ class ReportTemplate:
         """
         self.podcast = podcast
         self.config = config
-        self.template = Template(config.get('report_template', '{{ description }}'))
+        self.report_template = config.get('report_template', 'default')
+        self.template = None
+        with open(f"templates/{self.report_template}.tpl", "r") as template_file:
+            self.template = Template(template_file.read())
+        if not self.template:
+            log(f"Template {self.report_template} not found. Will only include description.", "warning")
+            self.template = Template("{{ description }}")
         self.name_template = Template(config.get('name_template', '{{ podcast_name }}'))
         self.link_template = Template(config.get('link_template', '{{ link }}'))
         self.links_section_template = Template(config.get('links_section_template', '{{ links }}'))
