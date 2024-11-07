@@ -239,24 +239,22 @@ report_template: |
   {% macro add_link(link, text) -%}
       [url={{ link }}]{{ text }}[/url]
   {%- endmacro %}
-  {%- if name %}
-  Name: {{ name }}
+  [center]{%- if podchaser.author.name or podcastindex.author %}[size=14][b]{{ podchaser.author.name or podcastindex.author }}[/b][/size] [size=10][b]PRESENTS[/b][/size]
   {% endif %}
-  {%- if tags %}
-  Tags: {{ tags }}
+  {%- if name %}[size=30][b]{{ name }}[/b][/size]
   {% endif %}
-  {%- if description %}
-  --- Torrent Description ---
+  {%- if podcastindex.description or podchaser.description_formatted %}[i]{{ podcastindex.description or podchaser.description_formatted }}[/i]
 
-  [b]Official Description[/b]
-  [quote]{{ description }}[/quote]
   {% endif %}
-  {%- if last_episode_date %}
-  [b]Last Episode Included[/b]
-  {{ last_episode_date }}
+  {%- if podchaser.webUrl %}{{ add_link(podchaser.webUrl, 'Official Website') }}{% endif %}{%- if podchaser.rssUrl %} | {{ add_link(podchaser.rssUrl, 'RSS Feed') }}{% endif %}{%- if podchaser.spotifyId %} | {{ add_link('https://open.spotify.com/show/' ~ podchaser.spotifyId, 'Spotify') }}{% endif %}{%- if podchaser.applePodcastsId %} | {{ add_link('https://podcasts.apple.com/us/podcast/id' ~ podchaser.applePodcastsId, 'Apple Podcasts') }}{% endif %}{%- if podchaser.url %} | {{ add_link(podchaser.url, 'Podchaser') }}{%- endif %}{%- if podnews.id %} | {{ add_link('https://podnews.net/podcast/' ~ podnews.id, 'Podnews') }}{% endif %}{%- if podcastindex.id %} | {{ add_link('https://podcastindex.org/podcast/' ~ podcastindex.id, 'Podcastindex') }}
   {% endif %}
-  {%- if bitrate_breakdown %}
-  [b]Bitrate Breakdown[/b]
+  File Format: [b]{{ file_format }}[/b] -- Overall Bitrate: [b]{{ overall_bitrate }}[/b] -- Number of Episodes: [b]{{ number_of_files }}[/b]
+  {%- if podchaser.startDate %}Start Date: [b]{{ podchaser.startDate }}[/b]{% endif %}{%- if podchaser.latestEpisodeDate %} -- Last Episode Included: [b]{{ podchaser.latestEpisodeDate }}[/b]
+  {% endif %}
+  {%- if podnews.appleRating %}Apple Podcasts Rating: [b]{{ podnews.appleRating }}[/b] ({{ podnews.appleRatingCount }} votes)
+
+  {% endif %}
+  {%- if bitrate_breakdown %}[b]Bitrate Breakdown[/b]
   [spoiler][code]
   {{ bitrate_breakdown }}
   [/code][/spoiler]
@@ -278,27 +276,10 @@ report_template: |
   [spoiler][code]
   {{ differing_file_formats }}
   [/code][/spoiler]
+
   {% endif %}
-  {%- if podchaser.webUrl %}
-  [b]Links[/b]
-  {{ add_link(podchaser.webUrl, 'Official Website') }}
-  {%- if podchaser.rssUrl %}
-  {{ add_link(podchaser.rssUrl, 'RSS Feed') }}
-  {%- endif %}
-  {%- if podchaser.spotifyId %}
-  {{ add_link('https://open.spotify.com/show/' ~ podchaser.spotifyId, 'Spotify') }}
-  {%- endif %}
-  {%- if podchaser.applePodcastsId %}
-  {{ add_link('https://podcasts.apple.com/us/podcast/id' ~ podchaser.applePodcastsId, 'Apple Podcasts') }}
-  {%- endif %}
-  {%- if podchaser.url %}
-  {{ add_link(podchaser.url, 'Podchaser') }}
-  {%- endif %}
-  {% endif %}
-  {%- if links and not podchaser.webUrl %}
-  {{ links }}
-  {% endif %}
-  --- Torrent Description ---
+  [size=10]Powered by [url=https://unwalled.cc/wikis/16]Bulldozer[/url] - Breaking Down Walls™ Since 2024[/size]
+  [/center]
 
 ## Logging settings
 # The log level for the application
