@@ -53,7 +53,9 @@ Tags: {{ tags }}
 {%- if podnews and podnews.appleRating %}
 
 Apple Podcasts Rating: [b]{{ podnews.appleRating }}[/b] ({{ podnews.appleRatingCount }} votes){%- endif %}
-{%- if podchaser.ratingAverage %}{%- if podnews and podnews.appleRating %} -- {% endif %}Podchaser Rating: [b]{{ podchaser.ratingAverage }}[/b] ({{ podchaser.ratingCount }} votes){%- endif %}
+{%- if podchaser.ratingAverage %}{%- if podnews and podnews.appleRating %} -- {%- else %}
+
+{% endif %} Podchaser Rating: [b]{{ podchaser.ratingAverage }}[/b] ({{ podchaser.ratingCount }} votes){%- endif %}
 {%- elif podcastindex %}
 {%- if podcastindex.author %}
 [b][size=10]{{ podcastindex.author_article | upper }}[/size] [size=14]{{ podcastindex.author | upper }}[/size] [size=10]PRODUCTION[/size][/b]
@@ -87,7 +89,8 @@ Apple Podcasts Rating: [b]{{ podnews.appleRating }}[/b] ({{ podnews.appleRatingC
 {%- endif %}
 {%- endif %}
 
-{% if bitrate_breakdown or differing_bitrates or file_format_breakdown or differing_file_formats %}
+{%- if bitrate_breakdown or differing_bitrates or file_format_breakdown or differing_file_formats %}
+
 {%- if bitrate_breakdown %}This upload has files with mixed bitrates.
 [spoiler][code]{{ bitrate_breakdown }}[/code][/spoiler]
 {%- endif %}
@@ -102,7 +105,7 @@ Apple Podcasts Rating: [b]{{ podnews.appleRating }}[/b] ({{ podnews.appleRatingC
 {%- endif %}
 {%- endif %}
 
-[size=10]Powered by [url=https://te.cc/wikis/16]Bulldozer[/url] - Breaking Down Walls™ Since 2024[/size]
+[size=10]Powered by [url=https://github.com/lewler/bulldozer]Bulldozer[/url] - Breaking Down Walls™ Since 2024[/size]
 [/center]
 
 --- Torrent Description ---
