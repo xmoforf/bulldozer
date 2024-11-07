@@ -94,6 +94,8 @@ class Report:
             if name:
                 data['name'] = name
 
+            data['name_clean'] = self.podcast.name
+
             if not check_files_only:
                 tags = self.podcast.metadata.get_tags()
                 if tags:
