@@ -121,6 +121,9 @@ premium_networks:
   - text: Wondery+
     tag: title
     name: Wondery+
+  - text: W+
+    tag: title
+    name: Wondery+
   - text: patreon.com
     tag: link
     name: Patreon
@@ -138,6 +141,10 @@ file_replacements:
     flags:
       - IGNORECASE
   - pattern: 'Wondery\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'W\+'
     replacement: ''
     flags:
       - IGNORECASE
@@ -175,6 +182,29 @@ description_replacements:
     replace_with: '[i]'
   - pattern: '</em>'
     replace_with: '[/i]'
+
+# The replacements to make in the title
+title_replacements:
+  - pattern: 'Wondery\+ Edition'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Wondery\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'W\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Premium'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: '[^\w\s-]'
+    replacement: ''
+  - pattern: '\s*-\s*$'
+    replacement: ''
 
 ## Date formats
 # Short date format

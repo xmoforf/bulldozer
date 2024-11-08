@@ -409,3 +409,39 @@ def normalize_string(string):
     :return: Normalized string
     """
     return re.sub(r'[^a-zA-Z0-9]', '', string).lower()
+
+def perform_replacements(string, file_replacements):
+    """
+    Perform a series of regsub replacements on a string.
+
+    :param string: The string to perform the replacements on.
+    :param file_replacements: The replacements to perform.
+
+    :return: The modified string.
+    """
+    for item in file_replacements:
+            pattern = item['pattern']
+            replacement = item['replacement']
+            flags = item.get('flags', [])
+            regex_flags = 0
+            flag_mapping = {
+                'IGNORECASE': re.IGNORECASE,
+                'MULTILINE': re.MULTILINE,
+                'DOTALL': re.DOTALL,
+                'VERBOSE': re.VERBOSE,
+                'ASCII': re.ASCII,
+            }
+            for flag in flags:
+                regex_flags |= flag_mapping.get(flag.upper(), 0)
+
+            repeat = item.get('repeat_until_no_change', False)
+
+            if repeat:
+                previous = None
+                while previous != string:
+                    previous = string
+                    string = re.sub(pattern, replacement, string)
+            else:
+                string = re.sub(pattern, replacement, string)
+
+    return string

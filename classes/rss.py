@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from titlecase import titlecase
 from .utils import spinner, get_metadata_directory, log, find_case_insensitive_files
-from .utils import special_capitalization, archive_metadata, ask_yes_no, announce
+from .utils import special_capitalization, archive_metadata, ask_yes_no, announce, perform_replacements
 
 class Rss:
     def __init__(self, podcast, source_rss_file, config, censor_rss):
@@ -54,7 +54,7 @@ class Rss:
             return None
         return rss_file[0]
 
-    def extract_folder_name_from(self):
+    def extract_folder_name(self):
         """
         Extract the folder name from the RSS feed.
 
@@ -66,9 +66,7 @@ class Rss:
         if channel is not None:
             title = channel.find('title')
             if title is not None:
-                new_title = title.text.replace("_", " -").replace(":", " -").replace(" | Wondery+ Edition", "").replace(" | Wondery+", "")
-                new_title = re.sub(r'[^\w\s-]', '', new_title)
-                new_title = new_title.strip().strip('-')
+                new_title = perform_replacements(title.text, self.config.get('title_replacements', [])).strip()
                 return titlecase(new_title, callback=lambda word, **kwargs: special_capitalization(word, self.config, None, **kwargs))
         return None 
 
@@ -109,7 +107,7 @@ class Rss:
             return False
 
         with spinner("Getting metadata from feed") as spin:
-            self.metadata['name'] = self.extract_folder_name_from()
+            self.metadata['name'] = self.extract_folder_name()
             if not self.metadata['name']:
                 spin.fail("✖")
                 log("Failed to extract name from RSS feed", "critical")
