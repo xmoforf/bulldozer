@@ -63,6 +63,7 @@ class PodcastImage:
             log(f"Converting image {image_filename} to JPEG", "debug")
             jpg_image_path = image_file.with_suffix('.jpg')
             self.convert_image_to_jpg(image_file, jpg_image_path)
+            image_file.unlink()
             image_file = jpg_image_path
             image_filename = image_file.name
             log(f"Converted image to {jpg_image_path}", "debug")
@@ -80,7 +81,7 @@ class PodcastImage:
                     return False
                 spin.ok("✔")
                 
-        return True
+        return image_file
     
     def archive_file(self):
         """
@@ -100,7 +101,9 @@ class PodcastImage:
             log(f"Deleting image {file_path.name}", "debug")        
             file_path.unlink()
             return True
-        self.resize()
+        file_path = self.resize()
+        if not file_path:
+            return False
         if file_path.exists():
             with spinner(f"Moving image {file_path.name}") as spin:
                 try:
