@@ -46,7 +46,7 @@ cache:
   hours: 24 # The number of hours to keep the cache
 
 # The cutoff for using mixed labels
-cutoff: .5
+cutoff: .7
 
 ## API Settings
 # The Podchaser API settings
