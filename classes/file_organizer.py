@@ -117,7 +117,7 @@ class FileOrganizer:
         """
         Pad episode numbers with zeros to make them consistent
         """
-        pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode|E)(\s*)(\d+)'), re.IGNORECASE)
+        pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode|E|Part)(\s*)(\d+)'), re.IGNORECASE)
 
         files_with_episodes = []
 
