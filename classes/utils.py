@@ -400,3 +400,12 @@ def write_to_cache(key, data, mode='w'):
     global config
     cache = Cache(config)
     return cache.write(key, data, mode)
+
+def normalize_string(string):
+    """
+    Normalize a string by removing non-alphanumeric characters and converting it to lowercase.
+
+    :param string: Input string
+    :return: Normalized string
+    """
+    return re.sub(r'[^a-zA-Z0-9]', '', string).lower()

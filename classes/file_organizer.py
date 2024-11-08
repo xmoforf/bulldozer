@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from .utils import spinner, titlecase_filename, announce, log
-from .utils import format_last_date, ask_yes_no, take_input
+from .utils import format_last_date, ask_yes_no, take_input, normalize_string
 
 class FileOrganizer:
     def __init__(self, podcast, config):
@@ -117,12 +117,10 @@ class FileOrganizer:
         """
         Pad episode numbers with zeros to make them consistent
         """
-        # Define the pattern for matching episode numbers
-        pattern = re.compile(self.config.get('episode_pad_pattern', r'(Ep\.?|Episode)\s*(\d+)'), re.IGNORECASE)
+        pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode)\s*(\d+)'), re.IGNORECASE)
 
         files_with_episodes = []
 
-        # Collect files with episode numbers
         for filename in Path(self.podcast.folder_path).rglob('*'):
             match = pattern.search(filename.name)
             if match:
@@ -133,15 +131,13 @@ class FileOrganizer:
             log("No files with episode numbers found", "debug")
             return
 
-        # Determine the padding length
         max_episode_number = max(ep_num for _, ep_num in files_with_episodes)
         num_digits = len(str(max_episode_number))
 
-        # Function to replace episode number with padded version
         def pad_episode_number(match):
-            prefix = match.group(1)  # The "Ep", "Ep.", or "Episode" part
-            episode_number = int(match.group(2))  # The numeric part
-            padded_episode = str(episode_number).zfill(num_digits)  # Pad the number based on the required length
+            prefix = match.group(1)
+            episode_number = int(match.group(2))
+            padded_episode = str(episode_number).zfill(num_digits)
             return f"{prefix} {padded_episode}"
 
         for filename, _ in files_with_episodes:
@@ -151,12 +147,72 @@ class FileOrganizer:
             filename.rename(new_path)
             log(f"Renamed '{filename}' to '{new_path}'", "debug")
 
+    def find_files_without_episode_numbers(self):
+        """
+        Find files that share the same date but have no episode number.
+        """
+        date_pattern = re.compile(self.config.get('date_pattern', r'\b(\d{4}-\d{2}-\d{2})\b'))
+        episode_pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode)\s*(\d+)'), re.IGNORECASE)
+
+        files_by_date = {}
+
+        for filename in Path(self.podcast.folder_path).rglob('*'):
+            date_match = date_pattern.search(filename.name)
+            if date_match:
+                date = date_match.group(1)
+
+                if date not in files_by_date:
+                    files_by_date[date] = []
+
+                files_by_date[date].append(filename)
+
+        log(f"Files by date: {files_by_date}", "debug")
+
+        files_without_episode_numbers = {}
+        for date, files in files_by_date.items():
+            files_missing_episode = [
+                file for file in files if not episode_pattern.search(file.name)
+            ]
+            if files_missing_episode:
+                files_without_episode_numbers[date] = files_missing_episode
+
+        log(f"Files without episode numbers: {files_without_episode_numbers}", "debug")
+
+        return files_without_episode_numbers
+    
+    def assign_episode_numbers_from_rss(self, files_without_episode_numbers):
+        """
+        Assign episode numbers based on RSS feed order.
+        """
+        episode_titles = self.podcast.rss.get_episodes()
+        episode_titles.reverse()
+
+        for date, files in files_without_episode_numbers.items():
+            max_episode_number = len(episode_titles)
+            num_digits = len(str(max_episode_number))
+
+            for index, file in enumerate(files):
+                normalized_filename = normalize_string(file.name)
+                for episode_number, title in enumerate(episode_titles, start=1):
+                    normalized_title = normalize_string(title)
+                    if normalized_title in normalized_filename:
+                        padded_episode = str(episode_number).zfill(num_digits)
+                        replacement = self.config.get('conflicing_dates_replacement', r'\1 Ep\. - ') + padded_episode
+                        new_filename = re.sub(rf'(\b{date}\b)', replacement, file.name)
+                        new_path = file.with_name(new_filename)
+                        file.rename(new_path)
+                        log(f"Renamed '{file}' to '{new_path}'", "debug")
+                        break
+
     def check_numbering(self):
         """
         Check if episode numbers are present and consistent in the file names.
         """
         announce("Checking if episode numbers are present and consistent", "info")
         self.pad_episode_numbers()
+        conflicting_episodes = self.find_files_without_episode_numbers()
+        if conflicting_episodes:
+            self.assign_episode_numbers_from_rss(conflicting_episodes)
         pattern = re.compile(self.config.get('numbered_episode_pattern', r'^(.* - )(\d{4}-\d{2}-\d{2}) (\d+)\. (.*)(\.\w+)'))
     
         files = Path(self.podcast.folder_path).rglob('*')
