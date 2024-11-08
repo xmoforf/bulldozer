@@ -1,7 +1,7 @@
 # podcast_metadata.py
 import json
 import re
-from .utils import log, archive_metadata, open_file_case_insensitive
+from .utils import log, archive_metadata, open_file_case_insensitive, find_case_insensitive_files
 from .data_formatter import DataFormatter
 from .apis.podchaser import Podchaser
 from .apis.podcastindex import Podcastindex
@@ -30,7 +30,13 @@ class PodcastMetadata:
 
         :return: The path to the metadata file.
         """
-        return self.podcast.folder_path / f'{self.podcast.name}.meta.json'
+        meta_files = find_case_insensitive_files('*.meta.*', self.podcast.folder_path)
+        if not meta_files:
+            return None
+        file_path = self.podcast.folder_path / meta_files[0].name
+        if not file_path.exists():
+            return None
+        return file_path
 
     def load(self, search_term=None):
         """
@@ -250,16 +256,19 @@ class PodcastMetadata:
 
         If the archive_metadata configuration is set to True, the metadata file will be archived instead of deleted.
         """
-        if not self.get_file_path().exists():
+        file_path = self.get_file_path()
+        
+        if not file_path:
+            log(f"Metadata file {file_path} does not exist.", "debug")
             return
         
         if not self.archive:
-            log(f"Deleting meta {self.get_file_path().name}", "debug")
-            self.get_file_path().unlink()
+            log(f"Deleting meta {file_path.name}", "debug")
+            file_path.unlink()
             return
 
         archive_folder = self.config.get('archive_metadata_directory', None)
-        log(f"Archiving meta {self.get_file_path().name}", "debug")
-        archive_metadata(self.get_file_path(), archive_folder)
-        log(f"Deleting meta {self.get_file_path().name}", "debug")
-        self.get_file_path().unlink()
+        log(f"Archiving meta {file_path.name}", "debug")
+        archive_metadata(file_path, archive_folder)
+        log(f"Deleting meta {file_path.name}", "debug")
+        file_path.unlink()

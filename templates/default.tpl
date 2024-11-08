@@ -7,9 +7,9 @@ Name: {{ name }}
 {% endif %}
 
 {%- if podchaser and podchaser.categories %}
-Tags: {% for category in podchaser.categories %}{{ category.title|lower }}{% if not loop.last %}, {% endif %}{% endfor %}
+Tags: {% for category in podchaser.categories %}{{ category.title | lower | replace(" ", ".") }}{% if not loop.last %}, {% endif %}{% endfor %}
 {%- elif podcastindex and podcastindex.categories %}
-Tags: {% for category in podcastindex.categories.values() %}{{ category|lower }}{% if not loop.last %}, {% endif %}{% endfor %}
+Tags: {% for category in podcastindex.categories.values() %}{{ category | lower | replace(" ", ".") }}{% if not loop.last %}, {% endif %}{% endfor %}
 {%- elif tags %}
 Tags: {{ tags }}
 {% endif %}

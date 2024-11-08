@@ -1,4 +1,5 @@
 # podcast.py
+import shutil
 from .file_organizer import FileOrganizer
 from .file_analyzer import FileAnalyzer
 from .dupe_checker import DupeChecker
@@ -112,5 +113,5 @@ class Podcast:
         Clean up and exit.
         """
         log("Cleaning up and exiting...", "debug")
-        self.folder_path.rmdir()
+        shutil.rmtree(self.folder_path)
         exit(1)

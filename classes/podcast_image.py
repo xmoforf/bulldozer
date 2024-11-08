@@ -28,7 +28,10 @@ class PodcastImage:
         image_files = find_case_insensitive_files('*.image.*', self.podcast.folder_path)
         if not image_files:
             return None
-        return image_files[0]
+        file_path = self.podcast.folder_path / image_files[0].name
+        if not file_path.exists():
+            return None
+        return file_path
     
     def get_meta_file_path(self):
         """
@@ -60,6 +63,7 @@ class PodcastImage:
             log(f"Converting image {image_filename} to JPEG", "debug")
             jpg_image_path = image_file.with_suffix('.jpg')
             self.convert_image_to_jpg(image_file, jpg_image_path)
+            image_file.unlink()
             image_file = jpg_image_path
             image_filename = image_file.name
             log(f"Converted image to {jpg_image_path}", "debug")
@@ -77,28 +81,33 @@ class PodcastImage:
                     return False
                 spin.ok("✔")
                 
-        return True
+        return image_file
     
     def archive_file(self):
         """
         Archive the image file by moving it to the metadata directory.
         """
-        if not self.get_file_path():
+        file_path = self.get_file_path()
+
+        if not file_path:
+            log(f"Image {file_path} does not exist.", "debug")
             return
         
         if self.archive:
-            log(f"Archiving image {self.get_file_path().name}", "debug")
-            archive_metadata(self.get_file_path(), self.config.get('archive_metadata_directory', None))
+            log(f"Archiving image {file_path.name}", "debug")
+            archive_metadata(file_path, self.config.get('archive_metadata_directory', None))
 
         if not self.include_metadata:
-            log(f"Deleting image {self.get_file_path().name}", "debug")        
-            self.get_file_path().unlink()
+            log(f"Deleting image {file_path.name}", "debug")        
+            file_path.unlink()
             return True
-        self.resize()
-        if self.get_file_path().exists():
-            with spinner(f"Moving image {self.get_file_path().name}") as spin:
+        file_path = self.resize()
+        if not file_path:
+            return False
+        if file_path.exists():
+            with spinner(f"Moving image {file_path.name}") as spin:
                 try:
-                    self.get_file_path().rename(self.get_meta_file_path())
+                    file_path.rename(self.get_meta_file_path())
                     log(f"Moved image to {self.get_meta_file_path()}", "debug")
                     self.moved = True
                 except Exception as e:

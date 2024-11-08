@@ -201,6 +201,8 @@ force_uppercase:
 force_titlecase:
   - '^The$'
   - '^A$'
+  - '^An$'
+  - '^At$'
 
 # When renaming files, anything matching these patterns will be left untouched
 skip_capitalization:
