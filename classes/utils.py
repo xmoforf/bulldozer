@@ -268,27 +268,36 @@ def get_metadata_directory_name(config):
     """
     return config.get('metadata_directory', 'Metadata')
 
-def special_capitalization(word, config, **kwargs):
+def special_capitalization(word, index, config):
     """
-    Apply special capitalization rules to a word.
+    Apply special capitalization rules to a word based on its context in the full filename.
 
     :param word: The word to capitalize.
+    :param index: The position of the word within the full filename.
     :param config: The configuration settings.
     :return: The capitalized word.
     """
     patterns_uppercase = config.get('force_uppercase', [])
     patterns_titlecase = config.get('force_titlecase', [])
     patterns_skip = config.get('skip_capitalization', [])
+
+    # Check if the word should be uppercase
     for pattern in patterns_uppercase:
         if re.match(pattern, word, re.IGNORECASE):
             return word.upper()
+
+    # Apply other titlecase rules
     for pattern in patterns_titlecase:
-        if re.match(pattern, word, re.IGNORECASE):
+        if re.match(pattern, word, re.IGNORECASE) and index > 0:
             return word.title()
+
+    # Skip capitalization based on patterns
     for pattern in patterns_skip:
         if re.search(pattern, word, re.IGNORECASE):
             return word
-    return None
+
+    # Default return if no special rule applies
+    return word
 
 def titlecase_filename(file_path, config):
     """
@@ -298,7 +307,11 @@ def titlecase_filename(file_path, config):
     :param config: The configuration settings.
     :return: The titlecased filename.
     """
-    new_stem = titlecase(file_path.stem, callback=lambda word, **kwargs: special_capitalization(word, config, **kwargs))
+    words = file_path.stem.split()
+    new_stem = ' '.join(
+        special_capitalization(word, file_path.stem.index(word), config)
+        for word in words
+    )
     return new_stem + file_path.suffix
 
 @contextmanager
