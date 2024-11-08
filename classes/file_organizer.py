@@ -179,7 +179,7 @@ class FileOrganizer:
                         padded_episode = str(episode_number).zfill(num_digits)
 
                         original_title = re.sub(rf'\b{date}\b ', '', file.name).strip()
-                        title_parts = original_title.split(' - ', 1)
+                        title_parts = original_title.rsplit(' - ', 1)
                         
                         new_filename = filename_format.format(prefix=title_parts[0], date=date, episode=padded_episode, suffix=title_parts[1])
                         new_path = file.with_name(new_filename)
