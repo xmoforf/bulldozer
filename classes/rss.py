@@ -254,3 +254,32 @@ class Rss:
                             return ""
                         return f" ({network['name']})"
         return ""
+    
+    def get_episodes(self):
+        """
+        Parse the RSS feed to extract episode titles in chronological order.
+
+        :param rss_feed_path: Path to the RSS feed XML file
+        :return: List of episode titles in chronological order
+        """
+        if not self.get_file_path().exists():
+            log("RSS file does not exist, can't fix episode numbering", "warning")
+        try:
+            tree = ET.parse(self.get_file_path())
+            root = tree.getroot()
+
+            items = root.findall('./channel/item')
+
+            episode_titles = []
+            for item in items:
+                title_element = item.find('title')
+                if title_element is not None:
+                    episode_titles.append(title_element.text)
+
+            return episode_titles
+
+        except ET.ParseError as e:
+            log(f"Error parsing RSS feed", "error")
+            log(e, "debug")
+            return []
+

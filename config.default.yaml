@@ -224,6 +224,15 @@ censor_rss_patterns:
     flags:
       - IGNORECASE
 
+# The pattern to match the episode number
+episode_pattern: '(Ep\.?|Episode)\s*(\d+)'
+
+# the pattern to match date strings
+date_pattern: '\b(\d{4}-\d{2}-\d{2})\b'
+
+# How to prefix the episode number if dates are conflicting
+conflicing_dates_replacement: '{prefix} - {date} Ep. {episode} - {suffix}'
+
 ## Templates
 # The template for the name to use in the report
 name_template: "{{ podcast_name }}{{ complete_str }}{{ premium_show }} [{{ start_year_str }}{{ last_episode_date_str }}/{{ file_format }}-{{ overall_bitrate }}]"
