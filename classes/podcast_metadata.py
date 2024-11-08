@@ -33,9 +33,7 @@ class PodcastMetadata:
         meta_files = find_case_insensitive_files('*.meta.*', self.podcast.folder_path)
         if not meta_files:
             return None
-        print(meta_files[0].name)
         file_path = self.podcast.folder_path / meta_files[0].name
-        print(file_path)
         if not file_path.exists():
             return None
         return file_path

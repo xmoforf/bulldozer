@@ -28,9 +28,7 @@ class PodcastImage:
         image_files = find_case_insensitive_files('*.image.*', self.podcast.folder_path)
         if not image_files:
             return None
-        print(image_files[0].name)
         file_path = self.podcast.folder_path / image_files[0].name
-        print(file_path)
         if not file_path.exists():
             return None
         return file_path
