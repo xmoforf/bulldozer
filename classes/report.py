@@ -28,6 +28,7 @@ class Report:
             base_dir = self.podcast.folder_path.parent
         base_dir = Path(base_dir)
         template = ReportTemplate(self.podcast, self.config)
+        cutoff = self.config.get('cutoff', .5)
         output_filename = base_dir / f'{self.podcast.name}.txt'
         if check_files_only:
             output_filename = base_dir / f'{self.podcast.name}.files.txt'
@@ -47,7 +48,7 @@ class Report:
             total_files = sum(bitrates_counter.values())
 
             most_common_bitrate, most_common_count = bitrates_counter.most_common(1)[0]
-            if most_common_count > total_files * .8:
+            if most_common_count > total_files * cutoff:
                 overall_bitrate = most_common_bitrate
             elif self.podcast.analyzer.all_vbr:
                 overall_bitrate = "VBR"
@@ -59,7 +60,7 @@ class Report:
                 file_formats_counter[file_format] = len(files)
 
             most_common_file_format, most_common_count = file_formats_counter.most_common(1)[0]
-            if most_common_count > total_files * .8:
+            if most_common_count > total_files * cutoff:
                 file_format = most_common_file_format
             else:
                 file_format = "Mixed"
