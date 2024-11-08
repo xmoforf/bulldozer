@@ -28,7 +28,12 @@ class PodcastImage:
         image_files = find_case_insensitive_files('*.image.*', self.podcast.folder_path)
         if not image_files:
             return None
-        return image_files[0]
+        print(image_files[0].name)
+        file_path = self.podcast.folder_path / image_files[0].name
+        print(file_path)
+        if not file_path.exists():
+            return None
+        return file_path
     
     def get_meta_file_path(self):
         """
@@ -83,22 +88,25 @@ class PodcastImage:
         """
         Archive the image file by moving it to the metadata directory.
         """
-        if not self.get_file_path():
+        file_path = self.get_file_path()
+
+        if not file_path:
+            log(f"Image {file_path} does not exist.", "debug")
             return
         
         if self.archive:
-            log(f"Archiving image {self.get_file_path().name}", "debug")
-            archive_metadata(self.get_file_path(), self.config.get('archive_metadata_directory', None))
+            log(f"Archiving image {file_path.name}", "debug")
+            archive_metadata(file_path, self.config.get('archive_metadata_directory', None))
 
         if not self.include_metadata:
-            log(f"Deleting image {self.get_file_path().name}", "debug")        
-            self.get_file_path().unlink()
+            log(f"Deleting image {file_path.name}", "debug")        
+            file_path.unlink()
             return True
         self.resize()
-        if self.get_file_path().exists():
-            with spinner(f"Moving image {self.get_file_path().name}") as spin:
+        if file_path.exists():
+            with spinner(f"Moving image {file_path.name}") as spin:
                 try:
-                    self.get_file_path().rename(self.get_meta_file_path())
+                    file_path.rename(self.get_meta_file_path())
                     log(f"Moved image to {self.get_meta_file_path()}", "debug")
                     self.moved = True
                 except Exception as e:
