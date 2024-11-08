@@ -186,6 +186,7 @@ class FileOrganizer:
         """
         episode_titles = self.podcast.rss.get_episodes()
         episode_titles.reverse()
+        filename_format = self.config.get('conflicing_dates_replacement', '{prefix} - {date} Ep. {episode} - {suffix}')
 
         for date, files in files_without_episode_numbers.items():
             max_episode_number = len(episode_titles)
@@ -197,9 +198,13 @@ class FileOrganizer:
                     normalized_title = normalize_string(title)
                     if normalized_title in normalized_filename:
                         padded_episode = str(episode_number).zfill(num_digits)
-                        replacement = self.config.get('conflicing_dates_replacement', r'\1 Ep\. - ') + padded_episode
-                        new_filename = re.sub(rf'(\b{date}\b)', replacement, file.name)
+
+                        original_title = re.sub(rf'\b{date}\b ', '', file.name).strip()
+                        title_parts = original_title.split(' - ')
+                        
+                        new_filename = filename_format.format(prefix=title_parts[0], date=date, episode=padded_episode, suffix=title_parts[1])
                         new_path = file.with_name(new_filename)
+
                         file.rename(new_path)
                         log(f"Renamed '{file}' to '{new_path}'", "debug")
                         break

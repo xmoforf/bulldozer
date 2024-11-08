@@ -231,7 +231,7 @@ episode_pattern: '(Ep\.?|Episode)\s*(\d+)'
 date_pattern: '\b(\d{4}-\d{2}-\d{2})\b'
 
 # How to prefix the episode number if dates are conflicting
-conflicing_dates_replacement: '\1 Ep\. - '
+conflicing_dates_replacement: '{prefix} - {date} Ep. {episode} - {suffix}'
 
 ## Templates
 # The template for the name to use in the report
