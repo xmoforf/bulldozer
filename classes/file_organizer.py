@@ -3,7 +3,7 @@ import fnmatch
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from .utils import spinner, titlecase_filename, announce, log
+from .utils import spinner, titlecase_filename, announce, log, perform_replacements
 from .utils import format_last_date, ask_yes_no, take_input, normalize_string
 
 class FileOrganizer:
@@ -37,31 +37,7 @@ class FileOrganizer:
         :param file_path: The path to the file.
         :return: The new name of the file.
         """
-        for item in self.config.get('file_replacements', []):
-            pattern = item['pattern']
-            replacement = item['replacement']
-            flags = item.get('flags', [])
-            regex_flags = 0
-            flag_mapping = {
-                'IGNORECASE': re.IGNORECASE,
-                'MULTILINE': re.MULTILINE,
-                'DOTALL': re.DOTALL,
-                'VERBOSE': re.VERBOSE,
-                'ASCII': re.ASCII,
-            }
-            for flag in flags:
-                regex_flags |= flag_mapping.get(flag.upper(), 0)
-
-            repeat = item.get('repeat_until_no_change', False)
-
-            if repeat:
-                previous_name = None
-                while previous_name != name:
-                    previous_name = name
-                    name = re.sub(pattern, replacement, name)
-            else:
-                name = re.sub(pattern, replacement, name)
-
+        name = perform_replacements(name, self.config.get('file_replacements', []))
         log(f"Renaming '{file_path.name}' to '{name}'", "debug")
 
         return file_path.with_name(name)
@@ -117,7 +93,7 @@ class FileOrganizer:
         """
         Pad episode numbers with zeros to make them consistent
         """
-        pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode|E)(\s*)(\d+)'), re.IGNORECASE)
+        pattern = re.compile(self.config.get('episode_pattern', r'(Ep\.?|Episode|E|Part)(\s*)(\d+)'), re.IGNORECASE)
 
         files_with_episodes = []
 
@@ -203,7 +179,7 @@ class FileOrganizer:
                         padded_episode = str(episode_number).zfill(num_digits)
 
                         original_title = re.sub(rf'\b{date}\b ', '', file.name).strip()
-                        title_parts = original_title.split(' - ', 1)
+                        title_parts = original_title.rsplit(' - ', 1)
                         
                         new_filename = filename_format.format(prefix=title_parts[0], date=date, episode=padded_episode, suffix=title_parts[1])
                         new_path = file.with_name(new_filename)

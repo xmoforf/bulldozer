@@ -45,6 +45,9 @@ cache:
   directory: /home/user/podcasts/cache # The directory to store the cache
   hours: 24 # The number of hours to keep the cache
 
+# The cutoff for using mixed labels
+cutoff: .7
+
 ## API Settings
 # The Podchaser API settings
 podchaser: 
@@ -121,6 +124,9 @@ premium_networks:
   - text: Wondery+
     tag: title
     name: Wondery+
+  - text: W+
+    tag: title
+    name: Wondery+
   - text: patreon.com
     tag: link
     name: Patreon
@@ -138,6 +144,10 @@ file_replacements:
     flags:
       - IGNORECASE
   - pattern: 'Wondery\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'W\+'
     replacement: ''
     flags:
       - IGNORECASE
@@ -175,6 +185,29 @@ description_replacements:
     replace_with: '[i]'
   - pattern: '</em>'
     replace_with: '[/i]'
+
+# The replacements to make in the title
+title_replacements:
+  - pattern: 'Wondery\+ Edition'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Wondery\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'W\+'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: 'Premium'
+    replacement: ''
+    flags:
+      - IGNORECASE
+  - pattern: '[^\w\s-]'
+    replacement: ''
+  - pattern: '\s*-\s*$'
+    replacement: ''
 
 ## Date formats
 # Short date format
@@ -228,7 +261,7 @@ censor_rss_patterns:
       - IGNORECASE
 
 # The pattern to match the episode number
-episode_pattern: '(Ep\.?|Episode|E)(\s*)(\d+)'
+episode_pattern: '(Ep\.?|Episode|E|Part)(\s*)(\d+)'
 
 # the pattern to match date strings
 date_pattern: '\b(\d{4}-\d{2}-\d{2})\b'
