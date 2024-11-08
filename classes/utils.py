@@ -268,36 +268,28 @@ def get_metadata_directory_name(config):
     """
     return config.get('metadata_directory', 'Metadata')
 
-def special_capitalization(word, index, config):
+def special_capitalization(word, config, previous_word=None, **kwargs):
     """
-    Apply special capitalization rules to a word based on its context in the full filename.
+    Apply special capitalization rules to a word.
 
     :param word: The word to capitalize.
-    :param index: The position of the word within the full filename.
     :param config: The configuration settings.
     :return: The capitalized word.
     """
     patterns_uppercase = config.get('force_uppercase', [])
     patterns_titlecase = config.get('force_titlecase', [])
     patterns_skip = config.get('skip_capitalization', [])
-
-    # Check if the word should be uppercase
     for pattern in patterns_uppercase:
         if re.match(pattern, word, re.IGNORECASE):
             return word.upper()
-
-    # Apply other titlecase rules
     for pattern in patterns_titlecase:
-        if re.match(pattern, word, re.IGNORECASE) and index > 0:
-            return word.title()
-
-    # Skip capitalization based on patterns
+        if re.match(pattern, word, re.IGNORECASE):
+            if (previous_word and re.match(r'\b(\d+\.)|\b\d+\b|-', previous_word)):
+                return word.title()
     for pattern in patterns_skip:
         if re.search(pattern, word, re.IGNORECASE):
             return word
-
-    # Default return if no special rule applies
-    return word
+    return None
 
 def titlecase_filename(file_path, config):
     """
@@ -307,12 +299,17 @@ def titlecase_filename(file_path, config):
     :param config: The configuration settings.
     :return: The titlecased filename.
     """
-    words = file_path.stem.split()
-    new_stem = ' '.join(
-        special_capitalization(word, file_path.stem.index(word), config)
-        for word in words
-    )
-    return new_stem + file_path.suffix
+    new_stem = ''
+    previous_word = ''
+    # Super hacky, but I just had to get it to work for now
+    for word in file_path.stem.split():
+        new_stem += special_capitalization(word, config, previous_word) or titlecase("Welcome " + word + " to the jungle")
+        pattern = r"welcome\s*| to the jungle"
+        new_stem = re.sub(pattern, '', new_stem, flags=re.IGNORECASE)
+        new_stem += ' '
+        previous_word = word
+
+    return new_stem.strip() + file_path.suffix
 
 @contextmanager
 def open_file_case_insensitive(filename, folder_path, mode='r'):

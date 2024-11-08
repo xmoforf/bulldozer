@@ -53,7 +53,7 @@ class Rss:
                 new_title = title.text.replace("_", " -").replace(":", " -").replace(" | Wondery+ Edition", "").replace(" | Wondery+", "")
                 new_title = re.sub(r'[^\w\s-]', '', new_title)
                 new_title = new_title.strip().strip('-')
-                return titlecase(new_title, callback=lambda word, **kwargs: special_capitalization(word, self.config, **kwargs))
+                return titlecase(new_title, callback=lambda word, **kwargs: special_capitalization(word, self.config, None, **kwargs))
         return None 
 
     def get_episode_count_from(self):
