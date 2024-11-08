@@ -113,12 +113,50 @@ class FileOrganizer:
                 if ask_yes_no(f"Would you like to remove '{file_path.name}'"):
                     file_path.unlink()
 
+    def pad_episode_numbers(self):
+        """
+        Pad episode numbers with zeros to make them consistent
+        """
+        # Define the pattern for matching episode numbers
+        pattern = re.compile(self.config.get('episode_pad_pattern', r'(Ep\.?|Episode)\s*(\d+)'), re.IGNORECASE)
+
+        files_with_episodes = []
+
+        # Collect files with episode numbers
+        for filename in Path(self.podcast.folder_path).rglob('*'):
+            match = pattern.search(filename.name)
+            if match:
+                episode_number = int(match.group(2))
+                files_with_episodes.append((filename, episode_number))
+
+        if not files_with_episodes:
+            log("No files with episode numbers found", "debug")
+            return
+
+        # Determine the padding length
+        max_episode_number = max(ep_num for _, ep_num in files_with_episodes)
+        num_digits = len(str(max_episode_number))
+
+        # Function to replace episode number with padded version
+        def pad_episode_number(match):
+            prefix = match.group(1)  # The "Ep", "Ep.", or "Episode" part
+            episode_number = int(match.group(2))  # The numeric part
+            padded_episode = str(episode_number).zfill(num_digits)  # Pad the number based on the required length
+            return f"{prefix} {padded_episode}"
+
+        for filename, _ in files_with_episodes:
+            new_filename = pattern.sub(pad_episode_number, filename.name)
+            new_path = filename.with_name(new_filename)
+
+            filename.rename(new_path)
+            log(f"Renamed '{filename}' to '{new_path}'", "debug")
+
     def check_numbering(self):
         """
         Check if episode numbers are present and consistent in the file names.
         """
         announce("Checking if episode numbers are present and consistent", "info")
-
+        self.pad_episode_numbers()
         pattern = re.compile(self.config.get('numbered_episode_pattern', r'^(.* - )(\d{4}-\d{2}-\d{2}) (\d+)\. (.*)(\.\w+)'))
     
         files = Path(self.podcast.folder_path).rglob('*')

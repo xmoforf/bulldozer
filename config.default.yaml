@@ -224,6 +224,8 @@ censor_rss_patterns:
     flags:
       - IGNORECASE
 
+episode_pad_pattern: '(Ep\.?|Episode)\s*(\d+)'
+
 ## Templates
 # The template for the name to use in the report
 name_template: "{{ podcast_name }}{{ complete_str }}{{ premium_show }} [{{ start_year_str }}{{ last_episode_date_str }}/{{ file_format }}-{{ overall_bitrate }}]"
