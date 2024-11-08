@@ -284,7 +284,7 @@ def special_capitalization(word, config, previous_word=None, **kwargs):
             return word.upper()
     for pattern in patterns_titlecase:
         if re.match(pattern, word, re.IGNORECASE):
-            if (previous_word and re.match(r'\b(\d+\.)|\b\d+\b|-', previous_word)):
+            if (previous_word and re.match(r'\b(\d+\.)|\b\d+\b|-', previous_word)) or not previous_word:
                 return word.title()
     for pattern in patterns_skip:
         if re.search(pattern, word, re.IGNORECASE):
