@@ -31,6 +31,9 @@ cover_size: 800
 # The announce URL for the tracker
 announce_url: https://tracker.com/announce/thisismysecretkey
 
+# Source tag to add to the torrent
+tracker_source: null
+
 # The API key to access the tracker
 api_key: andthisismyapikey
 
@@ -131,6 +134,12 @@ premium_networks:
     tag: link
     name: Patreon
 
+# Indicators that an episode is a trailer (affects episode numbering)
+trailer_patterns:
+  - trailer
+  - preview
+  - introducing
+
 # Decides if the premium tag should be included in the name
 include_premium_tag: true
 
@@ -208,6 +217,12 @@ title_replacements:
     replacement: ''
   - pattern: '\s*-\s*$'
     replacement: ''
+
+# Used when splitting the title to add episode numbers
+title_split_pattern:  '- (?=[^-]*$)'
+
+# Used when checking previous word for titlecase
+pattern_previous_word: '\b(\d+\.)|\b\d+\b|-|\b\w+_?'
 
 ## Date formats
 # Short date format
@@ -293,3 +308,4 @@ logfile_size_mb: 1
 
 # The number of log files to keep
 logfile_count: 5
+

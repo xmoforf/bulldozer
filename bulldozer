@@ -20,7 +20,7 @@ def main(input, censor_rss, report_only=False, search_term=None):
     :param censor_rss: Whether to censor the RSS feed or not
     """
     global config
-    print("· • —– ++ ---| Bulldozer v0.5.8 |--- ++ —– • ·")
+    print("· • —– ++ ---| Bulldozer v0.5.9 |--- ++ —– • ·")
 
     if os.path.isdir(input):
         folder_path = Path(input)
@@ -54,7 +54,8 @@ def main(input, censor_rss, report_only=False, search_term=None):
 
     announce_url = config.get("announce_url", None)
     base_dir = config.get("base_dir", None)
-    create_torrent(podcast, announce_url, base_dir)
+    tracker_source = config.get("tracker_source", None)
+    create_torrent(podcast, announce_url, base_dir, tracker_source)
 
     announce(f"All done, enjoy!", "celebrate")
 
@@ -75,18 +76,19 @@ def check_files(input):
     else:
         announce(f"Folder {folder_path} does not exist", "critical")
 
-def create_torrent(podcast, announce_url, base_dir=None):
+def create_torrent(podcast, announce_url, base_dir, tracker_source):
     """
     Create a torrent file for the given podcast
 
     :param podcast: The podcast object to create the torrent for
     :param announce_url: The announce URL to use for the torrent
     :param base_dir: The base directory to use for the torrent
+    :param tracker_source: The source to use for the tracker
     """
     if not announce_url:
         announce(f"Skipping torrent creation for {podcast.name}, no announce URL provided", "info")
         return
-    torrent_creator = TorrentCreator(podcast, announce_url, base_dir)
+    torrent_creator = TorrentCreator(podcast, announce_url, base_dir, tracker_source)
     total_size = sum(f.stat().st_size for f in podcast.folder_path.rglob('*') if f.is_file())
     piece_size = torrent_creator.calculate_piece_size(total_size)
     if ask_yes_no(f'Would you like to create the torrent now (piece size calcualted to {piece_size})'):
@@ -105,7 +107,8 @@ def make_torrent(input):
         podcast = Podcast(name, folder_path, config, check_duplicates=False)
         announce_url = config.get("announce_url")
         base_dir = config.get("base_dir", None)
-        create_torrent(podcast, announce_url, base_dir)
+        tracker_source = config.get("tracker_source", None)
+        create_torrent(podcast, announce_url, base_dir, tracker_source)
     else:
         announce(f"Folder {folder_path} does not exist", "error")
         return

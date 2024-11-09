@@ -279,12 +279,13 @@ def special_capitalization(word, config, previous_word=None, **kwargs):
     patterns_uppercase = config.get('force_uppercase', [])
     patterns_titlecase = config.get('force_titlecase', [])
     patterns_skip = config.get('skip_capitalization', [])
+    pattern_previous_word = config.get('pattern_previous_word', r'\b(\d+\.)|\b\d+\b|-|\b\w+_?')
     for pattern in patterns_uppercase:
         if re.match(pattern, word, re.IGNORECASE):
             return word.upper()
     for pattern in patterns_titlecase:
         if re.match(pattern, word, re.IGNORECASE):
-            if (previous_word and re.match(r'\b(\d+\.)|\b\d+\b|-', previous_word)) or not previous_word:
+            if (previous_word and re.match(pattern_previous_word, previous_word)) or not previous_word:
                 return word.title()
     for pattern in patterns_skip:
         if re.search(pattern, word, re.IGNORECASE):

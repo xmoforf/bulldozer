@@ -1,7 +1,7 @@
 # report.py
 from collections import Counter
 from pathlib import Path
-from .utils import spinner, log, format_last_date, ask_yes_no
+from .utils import spinner, log, format_last_date, ask_yes_no, take_input
 from .report_template import ReportTemplate
 
 class Report:
@@ -67,7 +67,18 @@ class Report:
 
             date_format_long = self.config.get('date_format_long', '%B %d %Y')
             start_year_str = str(self.podcast.analyzer.earliest_year) if self.podcast.analyzer.earliest_year else "Unknown"
-            last_episode_date_str = format_last_date(self.podcast.analyzer.last_episode_date, date_format_long) if self.podcast.analyzer.last_episode_date else "Unknown"
+            try:
+                last_episode_date_str = format_last_date(self.podcast.analyzer.last_episode_date, date_format_long) if self.podcast.analyzer.last_episode_date else "Unknown"
+            except ValueError as e:
+                log(f"Error formatting last episode date", "error")
+                log(e, "debug")
+                spin.stop()
+                last_episode_date = take_input(f"Can't use ({self.podcast.analyzer.last_episode_date}). Enter last episode date (YYYY-MM-DD)")
+                if not last_episode_date:
+                    log("No last episode date entered. Skipping report generation.", "debug")
+                    spin.fail("✖")
+                spin = spinner("Generating report")
+                last_episode_date_str = format_last_date(last_episode_date, date_format_long)
 
             if self.podcast.completed:
                 last_episode_date_str = last_episode_date_str.split()[2]

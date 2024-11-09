@@ -93,6 +93,7 @@ class Podchaser:
                     log(f"Podchaser query failed with status code {response.status_code}", "error")
                     log(response.text, "debug")
                     spin.fail('✖')
+                    announce(f"Failed to query Podchaser - probably due to not enough points. Consider disabling it.", "error")
                     return None
                 write_to_cache(key, json.dumps(data, indent=4))
                 spin.ok('✔')
@@ -114,6 +115,8 @@ class Podchaser:
             log(f"No cached found data for search '{name}' - quering Podchaser", "debug")
             data = self.query_api(name, key)
         
+        if not data:
+            return None
         podcasts = data.get('data', {}).get('podcasts', {}).get('data', [])
 
         announce(f"Found {len(podcasts)} podcasts matching '{name}' at Podchaser", "info")
