@@ -62,6 +62,9 @@ class Podcastindex:
             log(f"No cached data found for '{name}' - quering Podcastindex", "debug")
             data = self.query_api(name, key)
         
+        if not data:
+            return None
+
         podcasts = data.get('feeds', [])
 
         announce(f"Found {len(podcasts)} podcasts matching '{name}' at Podcastindex", "info")
