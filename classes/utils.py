@@ -88,10 +88,10 @@ def check_config():
     :return: True if the configuration is valid, False otherwise.
     """
     global config
-    base_config_file = Path("config.default.yaml")
+    base_config_file = Path("config.system.yaml")
     user_config_file = Path("config.yaml")
     if not base_config_file.exists():
-        log("'config.default.yaml' not found.", "error")
+        log("'config.system.yaml' not found.", "error")
         return False
     with open(base_config_file, 'r') as base_file:
         base_config = yaml.safe_load(base_file)
@@ -125,10 +125,10 @@ def load_config():
     :return: The configuration settings.
     """
     global config
-    base_config_file = Path("config.default.yaml")
+    base_config_file = Path("config.system.yaml")
     user_config_file = Path("config.yaml")
     if not base_config_file.exists():
-        log("'config.default.yaml' not found.", "error")
+        log("'config.system.yaml' not found.", "error")
         return None
     with open(base_config_file, 'r') as base_file:
         base_config = yaml.safe_load(base_file)

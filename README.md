@@ -38,7 +38,7 @@ Bulldozer is a script designed to automate the process of downloading, organizin
     sudo apt-get install libwebp-dev libavif-dev
     ```
 
-4. Create your own config file, and add the things you need to override:
+4. Edit your own config file, and add any additional things you need to override:
     ```sh
     touch config.yaml
     ```
@@ -49,7 +49,7 @@ Bulldozer is a script designed to automate the process of downloading, organizin
 
 Edit the `config.yaml` file to set up your preferences and API keys. The configuration file includes pretty much all settings that are needed to customize the behavior of the script. The settings most users need to change are at the top of the configuration file. The file has comments, and it's hopefully easy enough to understand what everything does.
 
-Note that you do not need to copy the entire file, and you do not need to add values that you don't need to change. This approach means less work when new things are added to `config.default.yaml`.
+Any additional system defaults you want to change can be copied over from `config.system.yaml`.
 
 ## Upgrading
 
@@ -117,7 +117,8 @@ chmod +x bulldozer
   - torrent_creator.py: Creates torrent files.
   - utils.py: Utility functions.
 - logs/: Contains log files.
-- config.example.yaml: Example configuration file.
+- config.yaml: User configuration file.
+- config.system.yaml: System default configuration file.
 - requirements.txt: List of required Python packages.
 
 ## License

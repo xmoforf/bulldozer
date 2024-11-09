@@ -28,15 +28,6 @@ keep_source_rss: false
 # The size you want the resized cover art to be
 cover_size: 800
 
-# The announce URL for the tracker
-announce_url: https://tracker.com/announce/thisismysecretkey
-
-# The API key to access the tracker
-api_key: andthisismyapikey
-
-# The URL to check for duplicates
-dupecheck_url: https://tracker.com/api/torrents/filter
-
 # How the RSS feed should be censored. Can be 'delete', 'edit'
 rss_censor_mode: delete
 
