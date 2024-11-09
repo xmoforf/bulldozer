@@ -1,7 +1,7 @@
 # podchaser.py
 import requests
 import json
-from ..utils import spinner, log, announce, ask_yes_no, get_from_cache, write_to_cache
+from ..utils import spinner, log, announce, ask_yes_no, get_from_cache, write_to_cache, take_input
 
 class Podchaser:
     def __init__(self, token, fields, url):
@@ -117,6 +117,13 @@ class Podchaser:
         podcasts = data.get('data', {}).get('podcasts', {}).get('data', [])
 
         announce(f"Found {len(podcasts)} podcasts matching '{name}' at Podchaser", "info")
+        while len(podcasts) == 0:
+            altname = take_input("Enter alternative search for podchaser")
+            if altname == "": break
+            data = self.query_api(altname, key)
+            podcasts = data.get('data', {}).get('podcasts', {}).get('data', [])
+            announce(f"Found {len(podcasts)} podcasts matching '{name}' at Podchaser", "info")
+
         for podcast in podcasts:
             title = podcast.get('title')
             url = podcast.get('url')
