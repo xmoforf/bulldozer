@@ -70,8 +70,13 @@ class Report:
             try:
                 last_episode_date_str = format_last_date(self.podcast.analyzer.last_episode_date, date_format_long) if self.podcast.analyzer.last_episode_date else "Unknown"
             except ValueError as e:
+                log(f"Error formatting last episode date", "error")
+                log(e, "debug")
                 spin.stop()
-                last_episode_date = take_input(f"Cannot convert last episode date ({self.podcast.analyzer.last_episode_date}). Please enter last episode date (%Y-%m-%d)")
+                last_episode_date = take_input(f"Can't use ({self.podcast.analyzer.last_episode_date}). Enter last episode date (YYYY-MM-DD)")
+                if not last_episode_date:
+                    log("No last episode date entered. Skipping report generation.", "debug")
+                    spin.fail("✖")
                 spin = spinner("Generating report")
                 last_episode_date_str = format_last_date(last_episode_date, date_format_long)
 
